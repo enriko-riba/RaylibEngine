@@ -42,7 +42,6 @@ public class GameModel
         SnakeDirection = Direction.West;
     }
 
-
     public IEnumerable<SnakeTile> SnakeTiles => Tiles;
 
     public float Velocity => BaseVelocityTilesPerSecond + (Level * VelocityLevelIncreaseSecond) + (FoodEaten * VelocityLevelIncreaseSecond / 2f);

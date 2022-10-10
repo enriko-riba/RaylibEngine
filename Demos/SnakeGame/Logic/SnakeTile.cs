@@ -16,5 +16,4 @@ public class SnakeTile
     public FrameType FrameType { get; set; }
 
     public override string ToString() => $"({X},{Y}) {FrameType} -> {Direction} {(FrameType == FrameType.BodyCorner ? CornerDirection:string.Empty)}";
-    
 }
