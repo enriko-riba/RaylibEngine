@@ -1,4 +1,6 @@
 ﻿namespace RaySnake.Logic;
+
+using RaylibEngine.Components;
 using RaylibEngine.Core;
 
 internal class Ground : Container, IDrawable

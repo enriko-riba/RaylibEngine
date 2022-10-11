@@ -1,6 +1,6 @@
 ﻿namespace RaySnake.Scenes;
 
-using RaylibEngine.Core;
+using RaylibEngine.Components;
 using RaylibEngine.SceneManagement;
 using RaySnake.Logic;
 using System.Numerics;
@@ -129,9 +129,12 @@ internal class GameScene : Scene
                         aspr.AddAnimation("bomb", new Rectangle[] {
                                     new(64, 128, TileSourceSize, TileSourceSize),
                                     new(128, 128, TileSourceSize, TileSourceSize),
-                                    new(64, 192, TileSourceSize, TileSourceSize),
-                                    new(128, 192, TileSourceSize, TileSourceSize) });
-                        aspr.Play("bomb", 2);
+									new(192, 128, TileSourceSize, TileSourceSize),
+									new(64, 192, TileSourceSize, TileSourceSize),
+                                    new(128, 192, TileSourceSize, TileSourceSize),
+									new(192, 192, TileSourceSize, TileSourceSize)
+						});
+                        aspr.Play("bomb", 4);
                         AddChild(aspr);
                         spriteObjects[new(i, j)] = aspr;
                         break;

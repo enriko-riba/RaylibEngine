@@ -1,6 +1,7 @@
 ﻿namespace RaylibEngine.SceneManagement;
 
 using Raylib_CsLo;
+using RaylibEngine.Components;
 using RaylibEngine.Core;
 
 public abstract class Scene : Container, IDrawable
