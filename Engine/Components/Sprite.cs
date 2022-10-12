@@ -16,14 +16,26 @@ public class Sprite : Container, IDrawable
 	private int width;
 	private int height;
 	private Vector2 origin;
+	private float angle;
+	private Rectangle aabb;
 
 	public Sprite(Texture texture) : base()
 	{
 		Texture = texture;
 		Frame = new(0, 0, texture.width, texture.height);
-		Width = texture.width;
-		Height = texture.height;
-		Pivot = Vector2.Zero;
+		Aabb = Frame;
+		width = texture.width;
+		height = texture.height;
+		pivot = Vector2.Zero;
+		UpdateDestinationRectangle();
+	}
+
+	/// <summary>
+	/// Axis aligned bounding box.
+	/// </summary>
+	public Rectangle Aabb { 
+		get => aabb; 
+		internal set => aabb = value; 
 	}
 
 	/// <summary>
@@ -43,7 +55,15 @@ public class Sprite : Container, IDrawable
 	/// <summary>
 	/// Rotation in degrees.
 	/// </summary>
-	public float Angle { get; set; }
+	public float Angle
+	{
+		get => angle;
+		set
+		{
+			angle = value;
+			UpdateDestinationRectangle();
+		}
+	}
 
 	/// <summary>
 	/// Color filter. Default is white which equals to no filtering.
@@ -121,6 +141,9 @@ public class Sprite : Container, IDrawable
 		var px = Helpers.Lerp(0, width, pivot.X);
 		var py = Helpers.Lerp(0, height, pivot.Y);
 		origin = new(px, py);
-		dst = new Rectangle(Position.X + px - ax, Position.Y +py - ay, Width, Height);
+		dst = new Rectangle(Position.X + px - ax, Position.Y + py - ay, Width, Height);
+		aabb = Body2D.CalcAabbForRotation(dst, Angle, new(dst.X + px, dst.Y + py));
+		aabb.x -= origin.X;
+		aabb.y -= origin.Y;
 	}
 }
