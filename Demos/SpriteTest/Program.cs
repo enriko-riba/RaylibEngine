@@ -11,7 +11,7 @@ public static class Program
         SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_MSAA_4X_HINT));
 		InitWindow(GetScreenWidth(), GetScreenHeight(), Title);
 		
-        SetTargetFPS(120);
+        SetTargetFPS(144);
         var bunnyScene = new SpriteScene(Title);
         SceneManager.ActivateScene(bunnyScene);
 

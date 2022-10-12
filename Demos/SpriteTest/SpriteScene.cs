@@ -1,5 +1,6 @@
 ﻿namespace SpriteTest;
 
+using RaylibEngine;
 using RaylibEngine.Components;
 using RaylibEngine.SceneManagement;
 using System.Numerics;
@@ -18,21 +19,29 @@ internal class SpriteScene : Scene
 	private int anchorId = 3;
 	private readonly string[] AnchorNames = new string[] { "Top left", "Bottom mid", "Bottom right", "Center" };
 
-	private readonly Texture texture;
+	private readonly Texture atlas;
 	private readonly Sprite sprite;
 	private bool isRotating = true;
+	private bool isHover = false;
+	private readonly Sprite[] bunnies;
+	private readonly bool[] bunnyCollision;
 
 	public SpriteScene(string name) : base(name)
 	{
 		WindowTitle = name;
 		BackgroundColor = DARKBROWN;
-		texture = LoadTexture("./Assets/spr.png");
-		SetTextureFilter(texture, TextureFilter.TEXTURE_FILTER_TRILINEAR);
+		atlas = LoadTexture("./Assets/spr.png");
+		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_TRILINEAR);
 		var w = GetScreenWidth();
 		var h = GetScreenHeight();
 
-		sprite = new Sprite(texture)
+		const int SpriteSize = 64;	//	those constants are dimensions of sprite frames inside the texture atlas
+		const int BunnySize = 32;
+
+		//	create rotating sprite from atlas
+		sprite = new Sprite(atlas)
 		{
+			Frame = new Rectangle(0, 0, SpriteSize, SpriteSize),
 			Position = new(w / 2, h / 2),
 			Pivot = new(0.5f, 0.5f),
 			Anchor = Anchors[anchorId],
@@ -40,34 +49,42 @@ internal class SpriteScene : Scene
 			Height = 128,
 		};
 		AddChild(sprite);
+
+		// create random bunnies from atlas
+		bunnies = new Sprite[15];
+		bunnyCollision = new bool[15];
+		for (int i = 0; i < bunnies.Length; i++)
+		{
+			var x = SpriteSize + Random.Shared.Next(0, 2) * BunnySize;
+			var y = Random.Shared.Next(0, 2) * BunnySize;
+			bunnies[i] = new Sprite(atlas)
+			{
+				Frame = new Rectangle(x, y, BunnySize, BunnySize),
+				Position = new(Random.Shared.Next(0, w - BunnySize), Random.Shared.Next(0, h - BunnySize)),
+			};
+			AddChild(bunnies[i]);
+		}
 	}
 
 	public override void OnBeginDraw()
 	{
-		DrawFPS(5, 10);
-		DrawText($"Pivot: {sprite.Pivot}", 5, 30, 20, LIME);
-		DrawText($"Anchor: {AnchorNames[anchorId]}", 5, 50, 20, LIME);
-		DrawText($"Angle: {sprite.Angle:N2}", 5, 70, 20, LIME);
-		var w = GetScreenWidth();
-		var h = GetScreenHeight();
-
-		DrawLine(w / 2, 10, w / 2, h - 10, YELLOW);
-		DrawLine(10, h / 2, w - 10, h / 2, BLUE);
+		RenderAxes();
 	}
 
 	public override void OnEndDraw()
 	{
-		DrawRectangleLinesEx(sprite.Aabb, 2f, RED);
+		RenderMenu();
+		RenderSprites();
 	}
 
 	public override void OnUpdate(float ellapsedSeconds)
 	{
+		//	update pivot, anchor and rotation states
 		if (IsKeyPressed(KeyboardKey.KEY_SPACE))
 		{
 			isRotating = !isRotating;
 		}
-
-		if (isRotating) sprite.Angle = (sprite!.Angle + 0.1f) % 360;
+		if (isRotating) sprite.Angle = (sprite.Angle + 0.1f) % 360;
 
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 		{
@@ -76,31 +93,57 @@ internal class SpriteScene : Scene
 		if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
 		{
 			anchorId = ++anchorId % Anchors.Length;
-			sprite!.Anchor = Anchors[anchorId];
+			sprite.Anchor = Anchors[anchorId];
 		}
 
-		var direction = IsKeyDown(KeyboardKey.KEY_RIGHT) ? Direction.East :
-						IsKeyDown(KeyboardKey.KEY_LEFT) ? Direction.West :
-						IsKeyDown(KeyboardKey.KEY_UP) ? Direction.North :
-						IsKeyDown(KeyboardKey.KEY_DOWN) ? Direction.South :
-						Direction.None;
+		//	update sprite position
+		sprite.Position += IsKeyDown(KeyboardKey.KEY_RIGHT) ? new(1f, 0f) :
+							IsKeyDown(KeyboardKey.KEY_LEFT) ? new(-1f, 0f) :
+							IsKeyDown(KeyboardKey.KEY_UP) ? new(0f, -1f) :
+							IsKeyDown(KeyboardKey.KEY_DOWN) ? new(0f, 1f) :
+							Vector2.Zero;
 
-		if (direction != Direction.None)
+		//	update mouse hover status 
+		isHover = sprite.Aabb.ContainsPoint(GetMousePosition());
+
+		//	save sprite/bunny collision status
+		for (int i = 0; i < bunnies.Length; i++)
 		{
-			var dx = direction == Direction.East ? 1 :
-					 direction == Direction.West ? -1 : 0;
-			var dy = direction == Direction.South ? 1 :
-					 direction == Direction.North ? -1 : 0;
-			sprite!.Position += new Vector2(dx, dy);
+			bunnyCollision[i] = sprite.Aabb.IntersectsAabb(bunnies[i].Aabb);
 		}
 	}
-}
 
-public enum Direction
-{
-	North,
-	East,
-	South,
-	West,
-	None,
+	private void RenderAxes()
+	{
+		var w = GetScreenWidth();
+		var h = GetScreenHeight();
+		DrawLine(w / 2, 10, w / 2, h - 10, YELLOW);
+		DrawLine(10, h / 2, w - 10, h / 2, BLUE);
+	}
+
+	private void RenderSprites()
+	{
+		var isCollidingWithAnyBunny = false;
+		for (int i = 0; i < bunnies.Length; i++)
+		{
+			if (bunnyCollision[i])
+			{
+				isCollidingWithAnyBunny = true;
+				DrawRectangleLinesEx(bunnies[i].Aabb, 2f, RED);
+			}
+		}
+
+		var color = isCollidingWithAnyBunny ? RED :
+					isHover ? GREEN : GRAY;
+		DrawRectangleLinesEx(sprite.Aabb, 2f, color);
+	}
+
+	private void RenderMenu()
+	{
+		DrawFPS(5, 10);
+		DrawText($"Pivot: {sprite.Pivot} left click to change", 5, 30, 20, LIME);
+		DrawText($"Anchor: {AnchorNames[anchorId]} right click to change", 5, 50, 20, LIME);
+		DrawText($"Angle: {sprite.Angle:N2} space to toggle", 5, 70, 20, LIME);
+		DrawText("arrows to move", 5, 90, 20, LIME);
+	}
 }

@@ -18,12 +18,13 @@ public class Sprite : Container, IDrawable
 	private Vector2 origin;
 	private float angle;
 	private Rectangle aabb;
+	private Rectangle frame;
 
 	public Sprite(Texture texture) : base()
 	{
 		Texture = texture;
-		Frame = new(0, 0, texture.width, texture.height);
-		Aabb = Frame;
+		frame = new(0, 0, texture.width, texture.height);
+		aabb = new(0, 0, texture.width, texture.height);
 		width = texture.width;
 		height = texture.height;
 		pivot = Vector2.Zero;
@@ -33,9 +34,9 @@ public class Sprite : Container, IDrawable
 	/// <summary>
 	/// Axis aligned bounding box.
 	/// </summary>
-	public Rectangle Aabb { 
-		get => aabb; 
-		internal set => aabb = value; 
+	public Rectangle Aabb
+	{
+		get => aabb;
 	}
 
 	/// <summary>
@@ -49,7 +50,11 @@ public class Sprite : Container, IDrawable
 	public Vector2 Position
 	{
 		get => position;
-		set { position = value; UpdateDestinationRectangle(); }
+		set
+		{
+			position = value;
+			UpdateDestinationRectangle();
+		}
 	}
 
 	/// <summary>
@@ -74,7 +79,16 @@ public class Sprite : Container, IDrawable
 	/// The source rectangle inside the texture that is rendered.
 	/// Default is the whole texture.
 	/// </summary>
-	public Rectangle Frame { get; set; }
+	public Rectangle Frame 
+	{ 
+		get => frame;
+		set {  
+			frame = value;
+			width = (int)frame.width;
+			height = (int)frame.height;
+			UpdateDestinationRectangle();
+		}
+	}
 
 	/// <summary>
 	/// Center of rotation.
@@ -110,7 +124,11 @@ public class Sprite : Container, IDrawable
 	public int Width
 	{
 		get => width;
-		set { width = value; UpdateDestinationRectangle(); }
+		set
+		{
+			width = value;
+			UpdateDestinationRectangle();
+		}
 	}
 
 	/// <summary>
@@ -119,7 +137,11 @@ public class Sprite : Container, IDrawable
 	public int Height
 	{
 		get => height;
-		set { height = value; UpdateDestinationRectangle(); }
+		set
+		{
+			height = value;
+			UpdateDestinationRectangle();
+		}
 	}
 
 	/// <summary>
@@ -142,7 +164,7 @@ public class Sprite : Container, IDrawable
 		var py = Helpers.Lerp(0, height, pivot.Y);
 		origin = new(px, py);
 		dst = new Rectangle(Position.X + px - ax, Position.Y + py - ay, Width, Height);
-		aabb = Body2D.CalcAabbForRotation(dst, Angle, new(dst.X + px, dst.Y + py));
+		aabb = dst.CalcAabbForRotation(Angle, new(dst.X + px, dst.Y + py));
 		aabb.x -= origin.X;
 		aabb.y -= origin.Y;
 	}
