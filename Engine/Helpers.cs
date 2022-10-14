@@ -46,33 +46,25 @@ public static class Helpers
 	/// Calculates the AABB of a rotated rectangle.
 	/// </summary>
 	/// <param name="originalRectangle">the unrotated rectangle for which the AABB is calculated</param>
-	/// <param name="rotation">rectangle rotation in degrees</param>
 	/// <param name="pivot">pivot point for the rotation</param>
+	/// <param name="rotation">rectangle rotation in degrees</param>
 	/// <returns>The AABB rectangle.</returns>
-	public static Rectangle CalcAabbForRotation(this Rectangle originalRectangle, float rotation, Vector2 pivot)
+	public static Rectangle CalcAabbForRotation(this Rectangle originalRectangle, Vector2 pivot, float rotation)
 	{
 		float x1 = float.MaxValue;
 		float y1 = float.MaxValue;
 		float x2 = float.MinValue;
 		float y2 = float.MinValue;
 
-		var (sin, cos) = Math.SinCos(rotation * DEGREE_2_RADIAN);
-		var vertices = GetVertices(originalRectangle);
-		var rotated = new (float x, float y)[] {
-			RotatePoint(pivot, vertices[0], (float)sin, (float)cos),
-			RotatePoint(pivot, vertices[1], (float)sin, (float)cos),
-			RotatePoint(pivot, vertices[2], (float)sin, (float)cos),
-			RotatePoint(pivot, vertices[3], (float)sin, (float)cos),
-		};
-		foreach (var (x, y) in rotated)
+		var rotated = GetRotatedVertices(originalRectangle, pivot, rotation);
+		foreach (var vertex in rotated)
 		{
-			x1 = Math.Min(x1, x);
-			y1 = Math.Min(y1, y);
-			x2 = Math.Max(x2, x);
-			y2 = Math.Max(y2, y);
+			x1 = Math.Min(x1, vertex.X);
+			y1 = Math.Min(y1, vertex.Y);
+			x2 = Math.Max(x2, vertex.X);
+			y2 = Math.Max(y2, vertex.Y);
 		}
-		Rectangle rect = new(x1, y1, Math.Abs(x2 - x1), Math.Abs(y2 - y1));
-		return rect;
+		return new(x1, y1, Math.Abs(x2 - x1), Math.Abs(y2 - y1));
 	}
 
 	/// <summary>
@@ -85,13 +77,18 @@ public static class Helpers
 	/// <param name="sin"></param>
 	/// <param name="cos"></param>
 	/// <returns></returns>
-	public static (float x, float y) RotatePoint(Vector2 pivot, Vector2 point, float sin, float cos)
+	public static Vector2 RotatePoint(Vector2 pivot, Vector2 point, float sin, float cos)
 	{
 		var x = (cos * (point.X - pivot.X)) - (sin * (point.Y - pivot.Y)) + pivot.X;
 		var y = (sin * (point.X - pivot.X)) + (cos * (point.Y - pivot.Y)) + pivot.Y;
-		return (x, y);
+		return new (x, y);
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="rectangle"></param>
+	/// <returns></returns>
 	public static ReadOnlySpan<Vector2> GetVertices(this Rectangle rectangle)
 	{
 		return new Vector2[]
@@ -100,6 +97,25 @@ public static class Helpers
 			new (rectangle.x + rectangle.width, rectangle.y),
 			new (rectangle.x + rectangle.width, rectangle.y + rectangle.height),
 			new (rectangle.x, rectangle.y + rectangle.height),
+		};
+	}
+
+	/// <summary>
+	/// Returns the rectangle vertices's rotated around the given pivot point.
+	/// </summary>
+	/// <param name="rectangle"></param>
+	/// <param name="pivot">the center of rotation</param>
+	/// <param name="rotation">angle in degrees</param>
+	/// <returns></returns>
+	public static ReadOnlySpan<Vector2> GetRotatedVertices(this Rectangle rectangle, Vector2 pivot, float rotation)
+	{
+		var (sin, cos) = Math.SinCos(rotation * DEGREE_2_RADIAN);
+		return new Vector2[]
+		{
+			RotatePoint(pivot, new (rectangle.x, rectangle.y), (float)sin, (float)cos),
+			RotatePoint(pivot, new (rectangle.x + rectangle.width, rectangle.y), (float)sin, (float)cos),
+			RotatePoint(pivot, new (rectangle.x + rectangle.width, rectangle.y + rectangle.height), (float)sin, (float)cos),
+			RotatePoint(pivot, new (rectangle.x, rectangle.y + rectangle.height), (float)sin, (float)cos)
 		};
 	}
 	#endregion

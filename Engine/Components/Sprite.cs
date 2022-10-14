@@ -164,7 +164,7 @@ public class Sprite : Container, IDrawable
 		var py = Helpers.Lerp(0, height, pivot.Y);
 		origin = new(px, py);
 		dst = new Rectangle(Position.X + px - ax, Position.Y + py - ay, Width, Height);
-		aabb = dst.CalcAabbForRotation(Angle, new(dst.X + px, dst.Y + py));
+		aabb = dst.CalcAabbForRotation(new(dst.X + px, dst.Y + py), Angle);
 		aabb.x -= origin.X;
 		aabb.y -= origin.Y;
 	}
