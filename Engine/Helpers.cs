@@ -7,7 +7,7 @@ public static class Helpers
 {
 	public const double DEGREE_2_RADIAN = Math.PI / 180.0;
 
-    public static float Lerp(float a, float b, float t) => (1f - t) * a + t * b;
+	public static float Lerp(float a, float b, float t) => (1f - t) * a + t * b;
 
 	#region Body2D
 
@@ -51,22 +51,19 @@ public static class Helpers
 	/// <returns>The AABB rectangle.</returns>
 	public static Rectangle CalcAabbForRotation(this Rectangle originalRectangle, float rotation, Vector2 pivot)
 	{
-		var (sin, cos) = Math.SinCos(rotation * Helpers.DEGREE_2_RADIAN);
-		var p1 = new Vector2(originalRectangle.x, originalRectangle.y);
-		var p2 = new Vector2(originalRectangle.x + originalRectangle.width, originalRectangle.y);
-		var p3 = new Vector2(originalRectangle.x + originalRectangle.width, originalRectangle.y + originalRectangle.height);
-		var p4 = new Vector2(originalRectangle.x, originalRectangle.y + originalRectangle.height);
-
-		(float x, float y)[] rotated = new (float x, float y)[] {
-			RotatePoint(pivot, p1, (float)sin, (float)cos),
-			RotatePoint(pivot, p2, (float)sin, (float)cos),
-			RotatePoint(pivot, p3, (float)sin, (float)cos),
-			RotatePoint(pivot, p4, (float)sin, (float)cos)
-		};
 		float x1 = float.MaxValue;
 		float y1 = float.MaxValue;
 		float x2 = float.MinValue;
 		float y2 = float.MinValue;
+
+		var (sin, cos) = Math.SinCos(rotation * DEGREE_2_RADIAN);
+		var vertices = GetVertices(originalRectangle);
+		var rotated = new (float x, float y)[] {
+			RotatePoint(pivot, vertices[0], (float)sin, (float)cos),
+			RotatePoint(pivot, vertices[1], (float)sin, (float)cos),
+			RotatePoint(pivot, vertices[2], (float)sin, (float)cos),
+			RotatePoint(pivot, vertices[3], (float)sin, (float)cos),
+		};
 		foreach (var (x, y) in rotated)
 		{
 			x1 = Math.Min(x1, x);
@@ -93,6 +90,17 @@ public static class Helpers
 		var x = (cos * (point.X - pivot.X)) - (sin * (point.Y - pivot.Y)) + pivot.X;
 		var y = (sin * (point.X - pivot.X)) + (cos * (point.Y - pivot.Y)) + pivot.Y;
 		return (x, y);
+	}
+
+	public static ReadOnlySpan<Vector2> GetVertices(this Rectangle rectangle)
+	{
+		return new Vector2[]
+		{
+			new (rectangle.x, rectangle.y),
+			new (rectangle.x + rectangle.width, rectangle.y),
+			new (rectangle.x + rectangle.width, rectangle.y + rectangle.height),
+			new (rectangle.x, rectangle.y + rectangle.height),
+		};
 	}
 	#endregion
 }

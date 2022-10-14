@@ -23,7 +23,7 @@ internal class SpriteScene : Scene
 	private readonly Sprite sprite;
 	private bool isRotating = true;
 	private bool isHover = false;
-	private readonly Sprite[] bunnies;
+	private readonly Bunny[] bunnies;
 	private readonly bool[] bunnyCollision;
 
 	public SpriteScene(string name) : base(name)
@@ -51,13 +51,13 @@ internal class SpriteScene : Scene
 		AddChild(sprite);
 
 		// create random bunnies from atlas
-		bunnies = new Sprite[15];
+		bunnies = new Bunny[15];
 		bunnyCollision = new bool[15];
 		for (int i = 0; i < bunnies.Length; i++)
 		{
 			var x = SpriteSize + Random.Shared.Next(0, 2) * BunnySize;
 			var y = Random.Shared.Next(0, 2) * BunnySize;
-			bunnies[i] = new Sprite(atlas)
+			bunnies[i] = new Bunny(atlas)
 			{
 				Frame = new Rectangle(x, y, BunnySize, BunnySize),
 				Position = new(Random.Shared.Next(0, w - BunnySize), Random.Shared.Next(0, h - BunnySize)),
