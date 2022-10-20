@@ -22,6 +22,7 @@ public class Sprite : Container, IDrawable
 
 	public Sprite(Texture texture) : base()
 	{
+		Visible = true;
 		Texture = texture;
 		frame = new(0, 0, texture.width, texture.height);
 		aabb = new(0, 0, texture.width, texture.height);
@@ -30,6 +31,11 @@ public class Sprite : Container, IDrawable
 		pivot = Vector2.Zero;
 		UpdateDestinationRectangle();
 	}
+
+	/// <summary>
+	/// For debug only. Returns the texture destination rectangle.
+	/// </summary>
+	public Rectangle Dst => dst;
 
 	/// <summary>
 	/// Axis aligned bounding box.
@@ -79,10 +85,11 @@ public class Sprite : Container, IDrawable
 	/// The source rectangle inside the texture that is rendered.
 	/// Default is the whole texture.
 	/// </summary>
-	public Rectangle Frame 
-	{ 
+	public Rectangle Frame
+	{
 		get => frame;
-		set {  
+		set
+		{
 			frame = value;
 			width = (int)frame.width;
 			height = (int)frame.height;
@@ -144,6 +151,8 @@ public class Sprite : Container, IDrawable
 		}
 	}
 
+	public bool Visible { get; set; }
+
 	/// <summary>
 	/// Renders the sprite texture and all sprite child nodes.
 	/// </summary>
@@ -152,7 +161,7 @@ public class Sprite : Container, IDrawable
 		Raylib.DrawTexturePro(Texture, Frame, dst, origin, Angle, Tint);
 		foreach (var child in Children)
 		{
-			if (child is IDrawable rc) rc.Draw();
+			if (child is IDrawable rc && rc.Visible) rc.Draw();
 		}
 	}
 

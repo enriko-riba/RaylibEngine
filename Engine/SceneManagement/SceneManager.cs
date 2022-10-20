@@ -76,7 +76,6 @@ public static class SceneManager
     {
         if (currentScene is not null)
         {
-			//var dt = Math.Max(Raylib.GetFrameTime(), 0.5f);
 			var dt = Raylib.GetFrameTime();
 			currentScene.Update(dt);
         }

@@ -18,7 +18,10 @@ internal class Ground : Container, IDrawable
 		this.width = width;
 		this.height = height;
 		this.color = color;
+		Visible = true;
 	}
+
+	public bool Visible { get; set; }
 
 	public void Draw()
 	{

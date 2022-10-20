@@ -6,6 +6,7 @@ namespace RaylibEngine;
 public static class Helpers
 {
 	public const double DEGREE_2_RADIAN = Math.PI / 180.0;
+	public const double RADIAN_2_DEGREE = 180.0 / Math.PI;
 
 	public static float Lerp(float a, float b, float t) => (1f - t) * a + t * b;
 

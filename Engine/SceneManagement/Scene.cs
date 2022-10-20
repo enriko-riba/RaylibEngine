@@ -12,6 +12,7 @@ public abstract class Scene : Container, IDrawable
     {
         Name = name;        
     }
+	public bool Visible { get => true; set { } }
 
     /// <summary>
     /// Invokes <see cref="Scene.OnUpdate(int)"/> on the active scene followed by <see cref="IUpdateable.Update(int)"/> on each child implementing <see cref="IUpdateable"/>.
@@ -37,7 +38,7 @@ public abstract class Scene : Container, IDrawable
         OnBeginDraw();
         foreach (var child in Children)
         {
-            if (child is IDrawable rc) rc.Draw();
+            if (child is IDrawable rc && rc.Visible) rc.Draw();
         }
 		OnEndDraw();
 		Raylib.EndDrawing();
