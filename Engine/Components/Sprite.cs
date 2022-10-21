@@ -158,11 +158,7 @@ public class Sprite : Container, IDrawable
 	/// </summary>
 	public virtual void Draw()
 	{
-		Raylib.DrawTexturePro(Texture, Frame, dst, origin, Angle, Tint);
-		foreach (var child in Children)
-		{
-			if (child is IDrawable rc && rc.Visible) rc.Draw();
-		}
+		Raylib.DrawTexturePro(Texture, Frame, dst, origin, Angle, Tint);		
 	}
 
 	private void UpdateDestinationRectangle()

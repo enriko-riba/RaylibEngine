@@ -36,13 +36,30 @@ public abstract class Scene : Container, IDrawable
         Raylib.BeginDrawing();
         Raylib.ClearBackground(BackgroundColor);
         OnBeginDraw();
-        foreach (var child in Children)
-        {
-            if (child is IDrawable rc && rc.Visible) rc.Draw();
-        }
+		RenderChildren(this);        
 		OnEndDraw();
 		Raylib.EndDrawing();
     }
+
+	/// <summary>
+	/// Renders the whole children graph.
+	/// Note: invisible nodes including child nodes are not rendered.
+	/// </summary>
+	/// <param name="container"></param>
+	private void RenderChildren(IContainer container)
+	{
+		foreach (var child in container.Children)
+		{
+			if (child is IDrawable dc) 
+			{
+				if (dc.Visible)
+				{
+					dc.Draw();
+					RenderChildren(child);
+				}
+			}
+		}
+	}
 
     /// <summary>
     /// The scenes window title.
