@@ -13,10 +13,8 @@ using System.Numerics;
 internal class ColliderScene : Scene
 {
 	private const int SpriteSize = 64;  //	dimensions of sprite frame inside the texture atlas
-	private const int BunnySize = 32;   //	dimensions of sprite frame inside the texture atlas
+	private const int BunnySize = 32;   //	dimensions of rendered sprite
 	
-	private const int BunnyCount = 50;
-
 	/// <summary>
 	/// Converts physics world to view.
 	/// </summary>
@@ -31,8 +29,8 @@ internal class ColliderScene : Scene
 	private bool isDebugRenderingOn = true;
 
 	private const float TimeStep = 1f / 75f;	//	fixed physics simulation time step
-	float accumulator = 0f; //	physics simulation time accumulator
-
+	float accumulator = 0f;                     //	physics simulation time accumulator
+	double polygonReductionTolerance = 1.25;
 	
 	//--------------------------
 	// for debug rendering
@@ -42,13 +40,15 @@ internal class ColliderScene : Scene
 	private IReadOnlyList<Vector2> edges;
 	private IReadOnlyList<Vector2> smoothEdges;
 
+	private int bunnyTypeIndex = -1;
 
 	public ColliderScene(string name) : base(name)
 	{
 		WindowTitle = name;
-		BackgroundColor = DARKBROWN;
+		BackgroundColor = new Raylib_CsLo.Color(20, 30, 25, 255);
 		atlas = LoadTexture("./Assets/spr.png");
-		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_TRILINEAR);
+		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_POINT);
+		SetTextureWrap(atlas, TextureWrap.TEXTURE_WRAP_CLAMP);
 
 		var w = GetScreenWidth();
 		var h = GetScreenHeight();
@@ -59,14 +59,12 @@ internal class ColliderScene : Scene
 		debugRenderer.AppendFlags(Box2D.NetStandard.Dynamics.World.Callbacks.DrawFlags.CenterOfMass);
 		world.SetDebugDraw(debugRenderer);
 
-		// create random bunnies from atlas texture
-		AddBunny();
 
 		//	create rotating sprite from atlas
 		rotor = new Sprite(atlas)
 		{
 			Frame = new Rectangle(0, 0, SpriteSize, SpriteSize),
-			Position = new(w / 2, h / 2),
+			Position = new(w / 2, h - 128),
 			Pivot = new(0.5f, 0.5f),
 			Anchor = new(0.5f, 0.5f),
 			Width = 128,
@@ -81,29 +79,26 @@ internal class ColliderScene : Scene
 			density = 10000f,
 			isSensor = false
 		};
-		world.CreateBody(rotor, BodyType.Kinematic, fd, false, (float)Math.PI, view2WorldScale, - 1);
+		world.CreateBody(rotor, BodyType.Kinematic, new[] { fd }, false, (float)Math.PI/2, view2WorldScale, - 1);
 
 		//	set ground box
 		world.CreateGroundBox(new(w / 2, h - 25), w / 2, 10, view2WorldScale, null);
+
+		AddBunny();
 	}
 
 	private void AddBunny()
 	{
+		const int AtlasBunnyStartX = 66;
 		var w = GetScreenWidth();
-		FixtureDef fd = new()
-		{
-			friction = 0.45f,
-			restitution = 0.05f,
-			density = 20f,
-			isSensor = false,
-		};
 		
-		var x = SpriteSize + Random.Shared.Next(0, 2) * BunnySize;
-		var y = Random.Shared.Next(0, 2) * BunnySize;
+		bunnyTypeIndex = ++bunnyTypeIndex % 4;
+		var x = AtlasBunnyStartX + (bunnyTypeIndex % 2) * BunnySize;
+		var y = (bunnyTypeIndex / 2) * BunnySize;
 		var bunny = new Sprite(atlas)
 		{
 			Frame = new Rectangle(x, y, BunnySize, BunnySize),
-			Position = new((w - BunnySize)/2, Random.Shared.Next(0, BunnySize * 2)),
+			Position = new((w - BunnySize)/2, BunnySize/2),
 			Pivot = new(0.5f, 0.5f),
 			Anchor = new(0.5f, 0.5f),
 		};
@@ -111,24 +106,19 @@ internal class ColliderScene : Scene
 		bunnies.Add(bunny);
 
 		var angularVelocity = (float)Random.Shared.NextDouble() * 2f - 1f;
-		
-		var image = LoadImage("./Assets/spr.png");
-		var p2dcollider = new Physics2DCollider(image, bunny.Frame);				
-		byteMap = p2dcollider.BppImage;
-		bitMap = p2dcollider.MorphedImage;
-		edges = p2dcollider.DetectEdges();
-		UnloadImage(image);
 
-		smoothEdges = DouglasPeuckerReduction.ReducePoints(edges, 1.0);
+		CalculateColliderPolygon();
+		FixtureDef fd = new()
+		{
+			friction = 0.45f,
+			restitution = 0.05f,
+			density = 20f,
+			isSensor = false,
+		};
 		fd.shape = new PolygonShape(smoothEdges.Take(4).Select(se => se * view2WorldScale).ToArray());
-		world.CreateBody(bunny, BodyType.Dynamic, fd, true, angularVelocity, view2WorldScale, bunnies.Count-1);
+		world.CreateBody(bunny, BodyType.Dynamic, new[] { fd }, true, angularVelocity, view2WorldScale, bunnies.Count-1);
 	}
 	
-	public override void OnBeginDraw()
-	{
-		RenderAxes();
-	}
-
 	public override void OnEndDraw()
 	{
 		RenderMenu();
@@ -177,7 +167,8 @@ internal class ColliderScene : Scene
 			body = body.GetNext();
 		}
 
-		if (GetKeyPressed() == (int)KeyboardKey.KEY_SPACE)
+		var key = GetKeyPressed();
+		if (key == (int)KeyboardKey.KEY_SPACE)
 		{
 			isDebugRenderingOn = !isDebugRenderingOn;
 			if (isDebugRenderingOn)
@@ -191,6 +182,16 @@ internal class ColliderScene : Scene
 				debugRenderer.ClearFlags(Box2D.NetStandard.Dynamics.World.Callbacks.DrawFlags.CenterOfMass);
 			}
 		}
+		else if(key == (int)KeyboardKey.KEY_MINUS || key == (int)KeyboardKey.KEY_KP_SUBTRACT)
+		{
+			polygonReductionTolerance -= 0.25;
+			CalculateColliderPolygon();			
+		}
+		else if (key == (int)KeyboardKey.KEY_KP_ADD)
+		{
+			polygonReductionTolerance += 0.25;
+			CalculateColliderPolygon();
+		}
 
 		if (IsMouseButtonPressed(0))
 		{
@@ -198,36 +199,51 @@ internal class ColliderScene : Scene
 		}
 	}
 
-	private static void RenderAxes()
+	private void CalculateColliderPolygon()
 	{
-		var w = GetScreenWidth();
-		var h = GetScreenHeight();
-		DrawLine(w / 2, 10, w / 2, h - 10, YELLOW);
-		DrawLine(10, h / 2, w - 10, h / 2, BLUE);
+		polygonReductionTolerance = Math.Clamp(polygonReductionTolerance, 0, 5);
+
+		var bunny = bunnies.Last();
+		var image = LoadImage("./Assets/spr.png");
+		var p2dcollider = new Physics2DCollider(image, bunny.Frame);
+		byteMap = p2dcollider.BppImage;
+		bitMap = p2dcollider.MorphedImage;
+		edges = p2dcollider.DetectEdges();
+		UnloadImage(image);
+		smoothEdges = DouglasPeuckerReduction.ReducePoints(edges, polygonReductionTolerance);
 	}
 
 	private void RenderMenu()
 	{
-		DrawFPS(5, 10);
-		DrawText("arrows to move kinematic rotor", 5, 50, 20, LIME);
-		DrawText("space to toggle debug rendering", 5, 90, 20, LIME);
+		DrawFPS(5, 25);
+		DrawText($"bunny type: {bunnyTypeIndex}, polygon reduction tolerance: {polygonReductionTolerance}", 105, 25, 20, LIME);
+		DrawText("+ / - to change polygon reduction tolerance", 5, 50, 20, WHITE);
+		DrawText("arrows to move kinematic rotor", 5, 75, 20, WHITE);
+		DrawText("space to toggle debug rendering", 5, 100, 20, WHITE);
 	}
 
 	private void RenderSpriteColliderImages(int scale)
 	{
+		var bunny = bunnies.Last();
+		DrawTexturePro(bunny.Texture, bunny.Frame, new(50, 200, BunnySize * scale, BunnySize * scale), Vector2.Zero, 0, WHITE);
+
 		for (int x = 0; x < BunnySize; x++)
 		{
 			for (int y = 0; y < BunnySize; y++)
 			{
-				DrawRectangle(100 + x * scale, 200 + y * scale, scale, scale, byteMap[x + y * BunnySize] == 1 ? RED : BLACK);
-				DrawRectangle(150 + BunnySize * scale + x * scale, 200 + y * scale, scale, scale, bitMap[x + y * BunnySize] == 1 ? WHITE : BLACK);
+				DrawRectangle(350 + x * scale, 200 + y * scale, scale, scale, byteMap[x + y * BunnySize] == 1 ? GREEN : DARKGRAY);
+				DrawRectangle(400 + BunnySize * scale + x * scale, 200 + y * scale, scale, scale, bitMap[x + y * BunnySize] == 1 ? WHITE : DARKGRAY);
 			}
 		}
 	}
 
 	private void RenderSpriteColliderEdges(int scale)
 	{
-		var offset = new Vector2(100 + (BunnySize*scale/2), 250 + BunnySize * scale + (BunnySize * scale / 2)) ;
+		const float LineThickness = 5.5f;
+		const float VertexRadius = 2.5f;
+		Raylib_CsLo.Color VertexColor = YELLOW;
+
+		var offset = new Vector2(370 + (BunnySize*scale/2), 250 + BunnySize * scale + (BunnySize * scale / 2)) ;
 		var scaleVector = new Vector2(scale, scale);
 		Vector2 v1, v2;
 
@@ -235,28 +251,32 @@ internal class ColliderScene : Scene
 		{
 			v1 = edges[i] * scaleVector + offset;
 			v2 = edges[i + 1] * scaleVector + offset;
-			var clrLerp = (byte)Helpers.Lerp(0, 255, i / (float)edges.Count);
+			var clrLerp = (byte)Helpers.Lerp(30, 255, i / (float)edges.Count);
 			var clr = i == 0 ? RED : new Raylib_CsLo.Color(clrLerp, clrLerp, clrLerp, (byte)255);
-			DrawLineV(v1, v2, clr);
-			DrawCircleV(v1, 2, BLUE);
+			DrawLineEx(v1, v2, LineThickness, clr);
+			DrawCircleV(v1, VertexRadius, VertexColor);
 		}
 		v1 = edges[edges.Count - 1] * scaleVector + offset;
 		v2 = edges[0] * scaleVector + offset;
-		DrawLineV(v1, v2, DARKGREEN);
+		DrawLineEx(v1, v2, LineThickness,DARKGREEN);
+		DrawCircleV(v1, VertexRadius, VertexColor);
+		DrawText("Vertices: " + edges.Count.ToString(), 350, offset.Y + BunnySize * scale * 0.5f, 15, WHITE);
 
 		// smoothed vertices
-		offset = new Vector2(150 + BunnySize * scale + (BunnySize * scale / 2), 250 + BunnySize * scale + (BunnySize * scale / 2));
+		offset = new Vector2(420 + BunnySize * scale + (BunnySize * scale / 2), 250 + BunnySize * scale + (BunnySize * scale / 2));
 		for (int i = 0; i < smoothEdges.Count - 1; i++)
 		{
 			v1 = smoothEdges[i] * scaleVector + offset;
 			v2 = smoothEdges[i + 1] * scaleVector + offset;
-			var clrLerp = (byte)Helpers.Lerp(0, 255, i / (float)smoothEdges.Count);
+			var clrLerp = (byte)Helpers.Lerp(30, 255, i / (float)smoothEdges.Count);
 			var clr = i == 0 ? RED : new Raylib_CsLo.Color(clrLerp, clrLerp, clrLerp, (byte)255);
-			DrawLineV(v1, v2, clr);
-			DrawCircleV(v1, 2, BLUE);
+			DrawLineEx(v1, v2, LineThickness, clr);
+			DrawCircleV(v1, VertexRadius, VertexColor);
 		}
 		v1 = smoothEdges[smoothEdges.Count - 1] * scaleVector + offset;
 		v2 = smoothEdges[0] * scaleVector + offset;
-		DrawLineV(v1, v2, DARKGREEN);
+		DrawLineEx(v1, v2, LineThickness, DARKGREEN);
+		DrawCircleV(v1, VertexRadius, VertexColor);
+		DrawText("Vertices: " + smoothEdges.Count.ToString(), 400 + BunnySize * scale, offset.Y + BunnySize * scale * 0.5f, 20, WHITE);
 	}
 }

@@ -12,7 +12,7 @@ using System.Numerics;
 internal class PhysicsScene : Scene
 {
 	private const int SpriteSize = 64;  //	dimensions of sprite frame inside the texture atlas
-	private const int BunnySize = 32;   //	dimensions of sprite frame inside the texture atlas
+	private const int BunnySize = 32;   //	dimensions of rendered sprite
 
 	private const int BunnyCount = 50;
 	private int totalBunnies = 0;
@@ -31,7 +31,7 @@ internal class PhysicsScene : Scene
 	private bool isDebugRenderingOn = true;
 
 	private const float TimeStep = 1f / 75f;    //	fixed physics simulation time step
-	float accumulator = 0f; //	physics simulation time accumulator
+	float accumulator = 0f;						//	physics simulation time accumulator
 
 	public PhysicsScene(string name) : base(name)
 	{
@@ -71,7 +71,7 @@ internal class PhysicsScene : Scene
 			density = 10000f,
 			isSensor = false
 		};
-		world.CreateBody(rotor, BodyType.Kinematic, fd, false, (float)Math.PI, view2WorldScale, -1);
+		world.CreateBody(rotor, BodyType.Kinematic, new[] { fd }, false, (float)Math.PI, view2WorldScale, -1);
 
 		//	set ground box
 		world.CreateGroundBox(new(w / 2, h - 25), w / 2, 10, view2WorldScale, null);
@@ -80,7 +80,6 @@ internal class PhysicsScene : Scene
 	private void AddBunnies()
 	{
 		var w = GetScreenWidth();
-		var image = LoadImage("./Assets/spr.png");
 		FixtureDef fd = new()
 		{
 			friction = 0.45f,
@@ -104,7 +103,7 @@ internal class PhysicsScene : Scene
 			AddChild(bunny);
 			bunnies.Add(bunny);
 			var angularVelocity = (float)Random.Shared.NextDouble() * 2f - 1f;
-			world.CreateBody(bunny, BodyType.Dynamic, fd, false, angularVelocity, view2WorldScale, bunnies.Count - 1);
+			world.CreateBody(bunny, BodyType.Dynamic, new[] { fd }, false, angularVelocity, view2WorldScale, bunnies.Count - 1);
 			totalBunnies++;
 		}
 	}

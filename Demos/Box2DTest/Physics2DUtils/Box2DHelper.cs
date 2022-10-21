@@ -30,23 +30,16 @@ public static class Box2DHelper
 	{
 		FixtureDef fd = new()
 		{
-			friction = 0.25f,
-			restitution = 0.1f,
+			friction = 0.1f,
+			restitution = 0.01f,
 			density = 1f,
 			isSensor = false
 		};
-		return world.CreateBody(sprite, bodyType, fd, false, angularVelocity, scale, userData);
+		return world.CreateBody(sprite, bodyType, new[] { fd }, false, angularVelocity, scale, userData);
 	}
 
-	public static Body CreateBody(this World world, Sprite sprite, BodyType bodyType, FixtureDef fd, bool isBullet, float angularVelocity, Vector2 scale, object? userData)
+	public static Body CreateBody(this World world, Sprite sprite, BodyType bodyType, IEnumerable<FixtureDef> fixtureDefs, bool isBullet, float angularVelocity, Vector2 scale, object? userData)
 	{
-		if (fd.shape is null)
-		{
-			PolygonShape shape = new();
-			shape.SetAsBox(scale.X * sprite.Width / 2, scale.Y * sprite.Height / 2);
-			fd.shape = shape;
-		}
-
 		BodyDef bd = new()
 		{
 			type = bodyType,
@@ -61,7 +54,19 @@ public static class Box2DHelper
 			userData = userData
 		};
 		var body = world.CreateBody(bd);
-		body.CreateFixture(fd);
+
+
+		foreach (var fd in fixtureDefs)
+		{
+			if (fd.shape is null)
+			{
+				PolygonShape shape = new();
+				shape.SetAsBox(scale.X * sprite.Width / 2, scale.Y * sprite.Height / 2);
+				fd.shape = shape;
+			}
+			body.CreateFixture(fd);
+		}
+
 		return body;
 	}
 

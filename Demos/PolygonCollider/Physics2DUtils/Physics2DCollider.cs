@@ -52,7 +52,7 @@ public class Physics2DCollider
 			{
 				int colorIdx = (y + (int)frame.y) * image.width + x + (int)frame.X;
 				Color pixel = colors[colorIdx];
-				var isEmpty = pixel.a < 80 || pixel.r + pixel.g + pixel.b < 50;
+				var isEmpty = pixel.a < 40 || pixel.r + pixel.g + pixel.b < 50;
 				result[x + y * w] = (byte)(isEmpty ? 0 : 1);
 			}
 		}
@@ -68,10 +68,10 @@ public class Physics2DCollider
 		for (int i = 0; i < bitmaskGrid.Length; i++)
 		{
 			var sum = SumNeighbourValues(i);
-			//bitmaskGrid[i] = (byte)(sum > 4 ? 1:0);
-			bitmaskGrid[i] = (byte)(sum > 5 ? 1 :
-									sum < 4 ? 0 :
-									BppImage[i]);
+			bitmaskGrid[i] = (byte)(sum > 4 ? 1:0);
+			//bitmaskGrid[i] = (byte)(sum > 5 ? 1 :
+			//						sum < 4 ? 0 :
+			//						BppImage[i]);
 			if (firstNonEmptyIndex < 0 && bitmaskGrid[i] == 1)
 				firstNonEmptyIndex = i - w - 1;
 		}
