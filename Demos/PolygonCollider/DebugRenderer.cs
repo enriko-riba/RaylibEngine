@@ -55,7 +55,7 @@ internal class DebugRenderer : DebugDraw
 	{
 		const float Thickness = 3f;
 		var clr = color.ToRaylibColor();
-		for (int i = 0; i < vertexCount - 1; i++)
+		for ( int i = 0; i < vertexCount - 1; i++)
 		{
 			var v1 = vertices[i] * world2Viewscale;
 			var v2 = vertices[i + 1] * world2Viewscale;

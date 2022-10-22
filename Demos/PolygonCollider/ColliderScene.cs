@@ -115,7 +115,7 @@ internal class ColliderScene : Scene
 			density = 20f,
 			isSensor = false,
 		};
-		fd.shape = new PolygonShape(smoothEdges.Take(4).Select(se => se * view2WorldScale).ToArray());
+		fd.shape = new PolygonShape(smoothEdges.Take(8).Select(se => se * view2WorldScale).ToArray());
 		world.CreateBody(bunny, BodyType.Dynamic, new[] { fd }, true, angularVelocity, view2WorldScale, bunnies.Count-1);
 	}
 	
