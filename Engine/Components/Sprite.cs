@@ -77,6 +77,11 @@ public class Sprite : Container, IDrawable
 	}
 
 	/// <summary>
+	/// Returns the read-only texture origin.
+	/// </summary>
+	public Vector2 Origin => origin;
+
+	/// <summary>
 	/// Color filter. Default is white which equals to no filtering.
 	/// </summary>
 	public Color Tint { get; set; } = Raylib.WHITE;
@@ -91,8 +96,8 @@ public class Sprite : Container, IDrawable
 		set
 		{
 			frame = value;
-			width = (int)frame.width;
-			height = (int)frame.height;
+			if(width==0) width = (int)frame.width;
+			if (height == 0) height = (int)frame.height;
 			UpdateDestinationRectangle();
 		}
 	}
@@ -154,7 +159,7 @@ public class Sprite : Container, IDrawable
 	public bool Visible { get; set; }
 
 	/// <summary>
-	/// Renders the sprite texture and all sprite child nodes.
+	/// Renders the sprite texture.
 	/// </summary>
 	public virtual void Draw()
 	{

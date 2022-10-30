@@ -4,6 +4,7 @@ using Raylib_CsLo;
 using RaylibEngine.Components;
 using RaylibEngine.Core;
 
+
 public abstract class Scene : Container, IDrawable
 {
     protected readonly Color textColor = Raylib.LIME;
@@ -20,7 +21,29 @@ public abstract class Scene : Container, IDrawable
     /// <param name="ellapsedSeconds"></param>
     public void Update(float ellapsedSeconds)
     {
-        OnUpdate(ellapsedSeconds);
+		var isAltDown = Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT_ALT);
+		if (isAltDown && Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
+		{
+			int display = Raylib.GetCurrentMonitor();
+			if (Raylib.IsWindowFullscreen())
+			{
+				Raylib.SetWindowSize(Raylib.GetMonitorWidth(display)-150, Raylib.GetMonitorHeight(display)-50);
+			}
+			else
+			{
+				Raylib.SetWindowSize(Raylib.GetMonitorWidth(display), Raylib.GetMonitorHeight(display));
+			}
+			Raylib.ToggleFullscreen();
+		}
+
+		if (Raylib.IsWindowResized())
+		{
+			var w = Raylib.GetScreenWidth();
+			var h = Raylib.GetScreenHeight();
+			OnResize(w, h);
+		}
+
+		OnUpdate(ellapsedSeconds);
         foreach (var child in Children)
         {
             if (child is IUpdateable uc) uc.Update(ellapsedSeconds);
@@ -96,4 +119,11 @@ public abstract class Scene : Container, IDrawable
 	/// Note: the base class has no implementation, if overridden in a derived class invoking the base <see cref="OnEndDraw"/> does nothing and should be omitted.
 	/// </summary>
 	public virtual void OnEndDraw() { }
+
+	/// <summary>
+	/// Invoked when the scree is resized.
+	/// </summary>
+	/// <param name="width">the new window width</param>
+	/// <param name="height">the new window height</param>
+	public virtual void OnResize(int width, int height) { }
 }

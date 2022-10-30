@@ -14,6 +14,7 @@ public class AnimatedSprite : Sprite, IUpdateable
 	private readonly Action? onUpdateAction;
 	private readonly Action? onCompleteAction;
 	private readonly Dictionary<string, Rectangle[]> animationSequences = new();
+	private Rectangle[] currentFrames;
 
 	public AnimatedSprite(Texture texture) : this(texture, null, null) { }
 	public AnimatedSprite(Texture texture, Action? onComplete) : this(texture, onComplete, null) { }
@@ -38,10 +39,9 @@ public class AnimatedSprite : Sprite, IUpdateable
 			if (accumulator >= secForFrame)
 			{
 				accumulator -= secForFrame;
-				frameIndex++;
-				var frames = animationSequences[currentSequence!];
-				if (onUpdateAction is not null) onUpdateAction();
-				if (frameIndex == frames.Length)
+				frameIndex++;				
+				onUpdateAction?.Invoke();
+				if (frameIndex == currentFrames.Length)
 				{
 					frameIndex = 0;
 
@@ -49,7 +49,7 @@ public class AnimatedSprite : Sprite, IUpdateable
 					if (!IsLooping)
 					{
 						currentSequence = null;
-						if (onCompleteAction is not null) onCompleteAction();
+						onCompleteAction?.Invoke();
 					}
 				}
 			}
@@ -59,9 +59,8 @@ public class AnimatedSprite : Sprite, IUpdateable
 	public override void Draw()
 	{
 		if (!string.IsNullOrWhiteSpace(currentSequence))
-		{
-			var frames = animationSequences[currentSequence];
-			Frame = frames[Math.Max(0, frameIndex)];
+		{			
+			Frame = currentFrames[Math.Max(0, frameIndex)];
 			base.Draw();
 		}
 	}
@@ -88,6 +87,7 @@ public class AnimatedSprite : Sprite, IUpdateable
 		if (!string.IsNullOrWhiteSpace(animationName) && animationSequences.ContainsKey(animationName))
 		{
 			currentSequence = animationName;
+			currentFrames = animationSequences[currentSequence];
 			Fps = fps ?? Fps;
 			IsLooping = loop;
 		}
