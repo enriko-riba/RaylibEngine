@@ -89,11 +89,7 @@ internal class GameScene : Scene
 
     #region sync visuals with model
     private void CreateObjects()
-    {
-        //foreach (var sprite in spriteObjects.Values)
-        //{
-        //    RemoveChild(sprite);
-        //}
+    {       
         spriteObjects.Clear();
 		RemoveAllChildren();
 		AddChild(new Ground(0, Margin, GetScreenWidth(), GetScreenHeight(), DARKGREEN));
@@ -125,6 +121,7 @@ internal class GameScene : Scene
                             Position = new(x, y),
                             Width = TileSize,
                             Height = TileSize,
+							Name = "Bomb"
                         };
                         aspr.AddAnimation("bomb", new Rectangle[] {
                                     new(64, 128, TileSourceSize, TileSourceSize),

@@ -1,7 +1,6 @@
 ﻿namespace Box2DTest.Physics2DUtils;
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 public class Physics2DCollider
@@ -9,15 +8,16 @@ public class Physics2DCollider
 	private readonly int maxIterations;
 	private readonly int w;
 	private readonly int h;
-	private int firstNonEmptyIndex;
+	private readonly int firstNonEmptyIndex;
 
 	public Physics2DCollider(Image image, Rectangle frame)
 	{
 		w = (int)frame.width;
 		h = (int)frame.height;
 		maxIterations = w * h * 2;
-		Create1BppGrid(image, frame);
-		CreateBitmaskGrid();
+		BppImage = Create1BppGrid(image, frame);
+		MorphedImage = CreateBitmaskGrid(BppImage, out firstNonEmptyIndex);
+		MorphedImage = BppImage;
 	}
 
 	public byte[] BppImage { get; private set; }
@@ -41,51 +41,60 @@ public class Physics2DCollider
 		return edges;
 	}
 
-	[MemberNotNull(nameof(BppImage))]
-	private unsafe void Create1BppGrid(Image image, Rectangle frame)
+	private unsafe byte[] Create1BppGrid(Image image, Rectangle frame)
 	{
+		var w = (int)frame.width;
+		var h = (int)frame.height;
+		var result = new byte[(w + 2) * (h + 2)];   //	1 pixel padding on every side
+
 		Color* colors = LoadImageColors(image);
-		var result = new byte[w * h];
 		for (int x = 0; x < w; x++)
 		{
 			for (int y = 0; y < h; y++)
 			{
-				int colorIdx = (y + (int)frame.y) * image.width + x + (int)frame.X;
-				Color pixel = colors[colorIdx];
+				int srcIdx = (y + (int)frame.y) * image.width + x + (int)frame.X;
+				Color pixel = colors[srcIdx];
 				var isEmpty = pixel.a < 40 || pixel.r + pixel.g + pixel.b < 50;
-				result[x + y * w] = (byte)(isEmpty ? 0 : 1);
+				var dstIdx = x + 1 + (y + 1) * (w + 2);
+				result[dstIdx] = (byte)(isEmpty ? 0 : 1);
 			}
 		}
 		UnloadImageColors(colors);
-		BppImage = result;
+		return result;
 	}
 
-	[MemberNotNull(nameof(MorphedImage))]
-	private void CreateBitmaskGrid()
+	private byte[] CreateBitmaskGrid(byte[] srcGrid, out int firstNonEmptyIndex)
 	{
+		byte[] dstGrid = new byte[srcGrid.Length];
 		firstNonEmptyIndex = -1;
-		byte[] bitmaskGrid = new byte[w * h];
-		for (int i = 0; i < bitmaskGrid.Length; i++)
+		for (int i = 0; i < srcGrid.Length; i++)
 		{
-			var sum = SumNeighbourValues(i);
-			bitmaskGrid[i] = (byte)(sum > 4 ? 1:0);
-			//bitmaskGrid[i] = (byte)(sum > 5 ? 1 :
-			//						sum < 4 ? 0 :
-			//						BppImage[i]);
-			if (firstNonEmptyIndex < 0 && bitmaskGrid[i] == 1)
+			var sum = SumNeighbourValues(srcGrid, i);
+			dstGrid[i] = sum switch
+			{
+				0 => 0,
+				1 => 0,
+				7 => 1,
+				8 => 1,
+				_ => srcGrid[i]
+			};
+			//dstGrid[i] = (byte)(sum > 4 ? 1:0);
+			//dstGrid[i] = (byte)(sum > 6 ? 1 :
+			//					sum < 4 ? 0 :
+			//					srcGrid[i]);
+			if (firstNonEmptyIndex < 0 && dstGrid[i] == 1)
 				firstNonEmptyIndex = i - w - 1;
 		}
-		MorphedImage = bitmaskGrid;
+		return dstGrid;
 	}
 
-
-	private int SumNeighbourValues(int id)
+	private int SumNeighbourValues(byte[] grid, int id)
 	{
 		var sum = 0;
 		var neighbours = NeighborIds(id);
 		for (int i = 0; i < neighbours.Length; i++)
 		{
-			if (neighbours[i] >= 0 && neighbours[i] < BppImage.Length) sum += BppImage[neighbours[i]];
+			if (neighbours[i] >= 0 && neighbours[i] < grid.Length) sum += grid[neighbours[i]];
 		}
 		return sum;
 	}
