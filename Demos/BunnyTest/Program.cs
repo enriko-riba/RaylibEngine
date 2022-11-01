@@ -6,8 +6,8 @@ public static class Program
 {
     const string Title = "Raylib Bunny test";
 
-    const int ScreenWidth = 1920;
-    const int ScreenHeight = 1080;
+    const int ScreenWidth = 800;
+    const int ScreenHeight = 450;
 
 
     public static int Main()

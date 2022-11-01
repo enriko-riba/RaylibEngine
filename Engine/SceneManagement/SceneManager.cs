@@ -52,7 +52,7 @@ public static class SceneManager
             scenes[scene.Name!] = scene;
             currentScene = scene;
             Raylib.SetWindowTitle(currentScene.WindowTitle ?? currentScene.Name ?? string.Empty);
-            currentScene.OnActivate();
+            currentScene.Activate();
         }
     }
 

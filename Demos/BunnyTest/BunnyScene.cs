@@ -5,7 +5,7 @@ internal class BunnyScene : Scene
 {
     const int MOUSE_BUTTON_LEFT = 0;
     const int MOUSE_BUTTON_RIGHT = 1;
-    const int BUNNY_TEXTURE_COUNT = 12;
+    const int BUNNY_TEXTURE_COUNT = 1;	//	Note: change the count to 12 in order to use different textures - using multiple textures will break the batching
 
     private int bunnyCount = 1000;
     private readonly Texture[] texture = new Texture[BUNNY_TEXTURE_COUNT];
@@ -23,9 +23,6 @@ internal class BunnyScene : Scene
 
     public override void OnBeginDraw()
     {
-        DrawFPS(5, 10);
-        DrawText($"bunnies: {bunnyCount}", 150, 10, 20, LIME);
-
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
             bunnyCount += 1000;
@@ -38,7 +35,14 @@ internal class BunnyScene : Scene
         }
     }
 
-    private void CreateBunnies(int count)
+	public override void OnEndDraw()
+	{
+		DrawRectangle(2, 2, 350, 40, BLACK);
+		DrawFPS(5, 10);
+		DrawText($"bunnies: {bunnyCount}", 150, 10, 20, LIME);
+	}
+
+	private void CreateBunnies(int count)
     {
         var w = GetScreenWidth();
         var h = GetScreenHeight();
@@ -47,8 +51,9 @@ internal class BunnyScene : Scene
         {
             var bunny = new Bunny(texture[i % BUNNY_TEXTURE_COUNT], w, h)
             {
-                Position = new(Random.Shared.Next(0, w), Random.Shared.Next(10, 300)),                
-            };
+                Position = new(Random.Shared.Next(0, w), Random.Shared.Next(10, 300)),
+				Tint = new Color(GetRandomValue(50, 240), GetRandomValue(80, 240), GetRandomValue(100, 240), 255),
+		};
             AddChild(bunny);
         }
     }

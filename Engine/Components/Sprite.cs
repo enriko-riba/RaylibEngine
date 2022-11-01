@@ -28,7 +28,6 @@ public class Sprite : Container, IDrawable
 		aabb = new(0, 0, texture.width, texture.height);
 		width = texture.width;
 		height = texture.height;
-		pivot = Vector2.Zero;
 		UpdateDestinationRectangle();
 	}
 

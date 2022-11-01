@@ -4,15 +4,31 @@ using Raylib_CsLo;
 using RaylibEngine.Components;
 using RaylibEngine.Core;
 
-
 public abstract class Scene : Container, IDrawable
 {
     protected readonly Color textColor = Raylib.LIME;
 
-    public Scene(string name)
+	private int width;
+	private int height;
+
+	public Scene(string name)
     {
-        Name = name;        
-    }
+        Name = name;
+	}
+
+	/// <summary>
+	/// Returns the screen width in pixels.
+	/// </summary>
+	public int ScreenWidth => width;
+
+	/// <summary>
+	/// Returns the screen height in pixels.
+	/// </summary>
+	public int ScreenHeight => height;
+
+	/// <summary>
+	/// Always returns true, exists just for <see cref="IDrawable"/> support.
+	/// </summary>
 	public bool Visible { get => true; set { } }
 
     /// <summary>
@@ -38,9 +54,9 @@ public abstract class Scene : Container, IDrawable
 
 		if (Raylib.IsWindowResized())
 		{
-			var w = Raylib.GetScreenWidth();
-			var h = Raylib.GetScreenHeight();
-			OnResize(w, h);
+			width = Raylib.GetScreenWidth();
+			height = Raylib.GetScreenHeight();
+			OnResize();
 		}
 
 		OnUpdate(ellapsedSeconds);
@@ -63,6 +79,13 @@ public abstract class Scene : Container, IDrawable
 		OnEndDraw();
 		Raylib.EndDrawing();
     }
+
+	internal void Activate()
+	{
+		width = Raylib.GetScreenWidth();
+		height = Raylib.GetScreenHeight();
+		this.OnActivate();
+	}
 
 	/// <summary>
 	/// Renders the whole children graph.
@@ -121,9 +144,7 @@ public abstract class Scene : Container, IDrawable
 	public virtual void OnEndDraw() { }
 
 	/// <summary>
-	/// Invoked when the scree is resized.
-	/// </summary>
-	/// <param name="width">the new window width</param>
-	/// <param name="height">the new window height</param>
-	public virtual void OnResize(int width, int height) { }
+	/// Invoked when the screen is resized. The new screen size is in <see cref="ScreenWidth"/> and <see cref="ScreenHeight"/> properties.
+	/// </summary>	
+	public virtual void OnResize() { }
 }

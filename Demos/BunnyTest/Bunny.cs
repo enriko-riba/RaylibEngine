@@ -30,28 +30,29 @@ internal class Bunny : Sprite, IUpdateable
     }
 
     public void Update(float ellapsedSeconds)
-    {       
-        speedY += gravity * ellapsedSeconds;
-            
-        Position += new Vector2(speedX, speedY);
-        if(Position.X >right)
-        {
-            speedX *= -1;
-            Position = new(right, Position.Y);
-        }
-        if (Position.X < left) {
-            speedX *= -0.85f;
-            Position = new(left, Position.Y);
-        }
-        if (Position.Y > bottom)
-        { 
-            speedY *= -1;
-            Position =  new(Position.X, bottom);
-        }
-        if (Position.Y < top)
-        {
-            Position = new(Position.X, top);
-            speedY = 0;
-        }        
-    }
+    {
+		speedY += gravity * ellapsedSeconds;
+
+		Position += new Vector2(speedX, speedY);
+		if (Position.X > right)
+		{
+			speedX *= -1;
+			Position = new(right, Position.Y);
+		}
+		if (Position.X < left)
+		{
+			speedX *= -0.85f;
+			Position = new(left, Position.Y);
+		}
+		if (Position.Y > bottom)
+		{
+			speedY *= -1;
+			Position = new(Position.X, bottom);
+		}
+		if (Position.Y < top)
+		{
+			Position = new(Position.X, top);
+			speedY = 0;
+		}
+	}
 }

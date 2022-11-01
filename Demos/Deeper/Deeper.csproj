@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Raylib-CsLo" Version="4.2.0.3" />
@@ -13,11 +14,8 @@
 		<Using Include="Raylib_CsLo.Raylib" Static="True" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Update="Assets\spr.png">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Assets\Terrain.png">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
+		<Content Include="Assets\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>	
 </Project>

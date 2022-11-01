@@ -1,8 +1,7 @@
 ﻿namespace RaylibEngine.Components;
 
-using RaylibEngine.Core;
 using Raylib_CsLo;
-using System.Numerics;
+using RaylibEngine.Core;
 
 /// <summary>
 /// Basic 2D sprite, renders a texture or part of it and enables positioning, anchoring, scaling, pivoting, rotations and tinting.
