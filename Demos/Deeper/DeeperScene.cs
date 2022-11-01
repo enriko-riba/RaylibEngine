@@ -18,7 +18,7 @@ internal class DeeperScene : Scene
 	private readonly Rectangle FrameGroundGrass = new(96, 0, TileSize, TileSize);
 	private readonly Rectangle FrameGroundDirt = new(96, 192, TileSize, TileSize);
 	private readonly Rectangle FrameGroundBrick = new(272, 64, TileSize, TileSize);
-	private readonly Rectangle FrameFow = new(0, 192, 32, 32);
+	private readonly Rectangle FrameSpotMask = new(0, 192, 32, 32);
 
 	private readonly TilingSprite backGround;
 	private readonly Sprite vehicle;
@@ -83,13 +83,12 @@ internal class DeeperScene : Scene
 		};
 		AddChild(vehicle);
 
-		//	Fog of war		
-		var fow = new FowSpot(groundAtlas, FrameFow)
+		//	light spot mask around vehicle	
+		var fow = new VehicleSpotMask(groundAtlas, FrameSpotMask, TileSize * 0.25f, TileSize * 2f)
 		{
 			Position = new(-TileSize, 0),
 			Width = (xTiles + 2) * TileSize,
 			Height = yTiles * TileSize,
-			Name = "Fow"
 		};
 		AddChild(fow);
 	}
@@ -138,7 +137,7 @@ internal class DeeperScene : Scene
 	{
 		halfOffset = new Vector2(ScreenWidth / 2f, ScreenHeight / 2f);
 		camera.offset = halfOffset;
-		var fow = GetChildByName("Fow") as FowSpot;
+		var fow = GetChildByName(VehicleSpotMask.NodeName) as VehicleSpotMask;
 		fow?.UpdateViewport(halfOffset);
 	}
 
