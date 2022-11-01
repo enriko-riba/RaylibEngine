@@ -29,5 +29,4 @@ void main()
     
     alpha = min(texelColor.a, alpha);
     color = vec4(0, 0, 0, alpha);
-    //color = texelColor;
 }
