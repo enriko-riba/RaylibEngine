@@ -130,6 +130,8 @@ internal class DeeperScene : Scene
 	{
 		halfOffset = new Vector2(ScreenWidth / 2f, ScreenHeight / 2f);
 		camera.offset = halfOffset;
+		var fow = GetChildByName("Fow") as FowSpot;
+		fow?.OnResize(ScreenWidth, ScreenHeight);
 	}
 
 	private void RenderMenu()

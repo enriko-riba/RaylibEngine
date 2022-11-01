@@ -14,7 +14,7 @@ public class AnimatedSprite : Sprite, IUpdateable
 	private readonly Action? onUpdateAction;
 	private readonly Action? onCompleteAction;
 	private readonly Dictionary<string, Rectangle[]> animationSequences = new();
-	private Rectangle[] currentFrames;
+	private Rectangle[]? currentFrames;
 
 	public AnimatedSprite(Texture texture) : this(texture, null, null) { }
 	public AnimatedSprite(Texture texture, Action? onComplete) : this(texture, onComplete, null) { }
@@ -41,7 +41,7 @@ public class AnimatedSprite : Sprite, IUpdateable
 				accumulator -= secForFrame;
 				frameIndex++;				
 				onUpdateAction?.Invoke();
-				if (frameIndex == currentFrames.Length)
+				if (frameIndex == currentFrames?.Length)
 				{
 					frameIndex = 0;
 
@@ -58,7 +58,7 @@ public class AnimatedSprite : Sprite, IUpdateable
 
 	public override void Draw()
 	{
-		if (!string.IsNullOrWhiteSpace(currentSequence))
+		if (!string.IsNullOrWhiteSpace(currentSequence) && currentFrames is not null)
 		{			
 			Frame = currentFrames[Math.Max(0, frameIndex)];
 			base.Draw();

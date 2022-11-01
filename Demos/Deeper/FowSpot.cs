@@ -1,4 +1,5 @@
 ﻿using RaylibEngine.Components;
+using System.Numerics;
 
 namespace Deeper
 {
@@ -7,9 +8,8 @@ namespace Deeper
 		private readonly Shader shdrSpot;
 		private int innerLoc;
 		private int radiusLoc;
-		private int screenWidthLoc;
-		private int screenHeightLoc;
-
+		private int screenHalfLoc;
+		
 		public FowSpot(Texture texture, Rectangle srcFrame) : base(texture)
 		{
 			Frame = srcFrame;
@@ -17,15 +17,13 @@ namespace Deeper
 			shdrSpot = LoadShader(null, "./Assets/Shaders/vehicle-spot.fs");
 			innerLoc = GetShaderLocation(shdrSpot, "inner");
 			radiusLoc = GetShaderLocation(shdrSpot, "radius");
-			screenWidthLoc = GetShaderLocation(shdrSpot, "screenWidth");
-			screenHeightLoc = GetShaderLocation(shdrSpot, "screenHeight");
+			screenHalfLoc = GetShaderLocation(shdrSpot, "screenHalfSize");
 
 			var inner = 48 * 0.2f;
 			var radius = 48 * 2f;
 			SetShaderValue(shdrSpot, innerLoc, inner, ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
 			SetShaderValue(shdrSpot, radiusLoc, radius, ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
-			SetShaderValue(shdrSpot, screenWidthLoc, (float)GetScreenWidth(), ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
-			SetShaderValue(shdrSpot, screenHeightLoc, (float)GetScreenHeight(), ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
+			SetShaderValue(shdrSpot, screenHalfLoc, new Vector2(GetScreenWidth()/2, GetScreenHeight()/2), ShaderUniformDataType.SHADER_UNIFORM_VEC2);
 		}
 
 		public override void Draw()
@@ -33,6 +31,11 @@ namespace Deeper
 			BeginShaderMode(shdrSpot);
 			base.Draw();
 			EndShaderMode();
+		}
+
+		public void OnResize(int width, int height)
+		{
+			SetShaderValue(shdrSpot, screenHalfLoc, new Vector2(width/2, height/2), ShaderUniformDataType.SHADER_UNIFORM_VEC2);
 		}
 	}
 }

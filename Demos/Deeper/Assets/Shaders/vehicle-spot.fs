@@ -4,17 +4,14 @@ precision mediump float;
 // Output fragment color
 out vec4 color;
 
-uniform float inner;        // inner radius
-uniform float radius;       // alpha fades out to this radius
-uniform float screenWidth;  // Width of the screen
-uniform float screenHeight;  // Width of the screen
+uniform float inner;            // inner radius
+uniform float radius;           // alpha fades out to this radius
+uniform vec2 screenHalfSize;    // viewport dimensions
 
 void main()
 {
-    float alpha = 0.0;
-
-    vec2 center = vec2(screenWidth/2, screenHeight/2);    
-    float d = distance(gl_FragCoord.xy, center) - radius;
+    float alpha = 0.0;    
+    float d = distance(gl_FragCoord.xy, screenHalfSize) - radius;
 
     if (d > radius)
     {
