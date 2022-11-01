@@ -33,9 +33,9 @@ namespace Deeper
 			EndShaderMode();
 		}
 
-		public void OnResize(int width, int height)
+		public void UpdateViewport(Vector2 halfSize)
 		{
-			SetShaderValue(shdrSpot, screenHalfLoc, new Vector2(width/2, height/2), ShaderUniformDataType.SHADER_UNIFORM_VEC2);
+			SetShaderValue(shdrSpot, screenHalfLoc, halfSize, ShaderUniformDataType.SHADER_UNIFORM_VEC2);
 		}
 	}
 }

@@ -14,6 +14,8 @@ public abstract class Scene : Container, IDrawable
 	public Scene(string name)
     {
         Name = name;
+		width = Raylib.GetScreenWidth();
+		height = Raylib.GetScreenHeight();
 	}
 
 	/// <summary>

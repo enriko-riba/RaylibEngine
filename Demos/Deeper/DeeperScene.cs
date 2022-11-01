@@ -16,28 +16,25 @@ internal class DeeperScene : Scene
 	//---------------------------------
 	private readonly Rectangle FrameGroundLine = new(96, 64, TileSize, TileSize);
 	private readonly Rectangle FrameGroundGrass = new(96, 0, TileSize, TileSize);
-	private readonly Rectangle FrameFow = new(0, 192, 16, 16);
-
+	private readonly Rectangle FrameGroundDirt = new(96,192, TileSize, TileSize);
+	private readonly Rectangle FrameGroundBrick = new(272, 64, TileSize, TileSize);
+	private readonly Rectangle FrameFow = new(0, 192, 32, 32);
 
 	private readonly TilingSprite backGround;
 	private readonly Sprite vehicle;
 	private readonly Sprite[] map = new Sprite[xTiles * yTiles];
 	private Camera2D camera;
 	private Vector2 halfOffset;
-
-	
+		
 
 	public DeeperScene(string name) : base(name)
 	{
 		WindowTitle = name;
-		BackgroundColor = BLACK;
-		var w = GetScreenWidth();
-		var h = GetScreenHeight();
-		halfOffset = new(w / 2, h / 2);
-
+		BackgroundColor = BLACK;		
+		halfOffset = new(ScreenWidth / 2, ScreenHeight / 2);
 		camera = new()
 		{
-			offset = new Vector2(w / 2, h / 2),
+			offset = halfOffset,
 			zoom = 1f
 		};
 
@@ -45,8 +42,8 @@ internal class DeeperScene : Scene
 		var backTexture = LoadTexture("./Assets/Background/blue.png");
 		backGround = new TilingSprite(backTexture)
 		{
-			Width = w,
-			Height = h,
+			Width = ScreenWidth,
+			Height = ScreenHeight/2,
 			Position = Vector2.Zero
 		};
 		AddChild(backGround);
@@ -58,10 +55,10 @@ internal class DeeperScene : Scene
 		for (int x = 0; x < xTiles; x++)
 		{
 			for (int y = 0; y < yTiles; y++)
-			{
+			{	
 				var mapTile = new Sprite(groundAtlas)
 				{
-					Frame = x % 3 == 0 ? FrameGroundLine : FrameGroundGrass,
+					Frame = GetMapFrame(x, y),
 					Position = new(x * TileSize, y * TileSize + TileSize / 2),
 					Anchor = new(0.5f, 0.5f),
 					Width = TileSize,
@@ -72,17 +69,6 @@ internal class DeeperScene : Scene
 			}
 		}
 
-		//	Fog of war		
-		var fow = new FowSpot(groundAtlas, FrameFow)
-		{
-			Position = new(0, 0),
-			Width = xTiles * TileSize,
-			Height = yTiles * TileSize,
-			Name = "Fow"
-		};
-		AddChild(fow);
-
-
 		//	players vehicle
 		var atlas = LoadTexture("./Assets/spr.png");
 		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
@@ -92,10 +78,20 @@ internal class DeeperScene : Scene
 			Position = new(TileSize * xTiles / 2, 0),
 			Pivot = new(0.5f, 1f),
 			Anchor = new(0.5f, 1f),
-			Width = VehicleSize,
-			Height = VehicleSize,
+			Width = TileSize,
+			Height = TileSize,
 		};
 		AddChild(vehicle);
+
+		//	Fog of war		
+		var fow = new FowSpot(groundAtlas, FrameFow)
+		{
+			Position = new(-TileSize, 0),
+			Width = (xTiles + 2) * TileSize,
+			Height = yTiles * TileSize,
+			Name = "Fow"
+		};
+		AddChild(fow);
 	}
 
 	public override void OnBeginDraw()
@@ -120,10 +116,22 @@ internal class DeeperScene : Scene
 							IsKeyDown(KeyboardKey.KEY_DOWN) ? new(0f, speed) :
 							Vector2.Zero;
 
+		if (vehicle.Position.X < TileSize)
+			vehicle.Position = new(TileSize, vehicle.Position.Y);
+
+		if (vehicle.Position.X > TileSize * (xTiles - 2))
+			vehicle.Position = new(TileSize * (xTiles - 2), vehicle.Position.Y);
+
+		if (vehicle.Position.Y < 0)
+			vehicle.Position = new(vehicle.Position.X, 0);
+
+		if (vehicle.Position.Y > TileSize * (yTiles-1))
+			vehicle.Position = new(vehicle.Position.X, TileSize * (yTiles - 1));
+
 		camera.target = vehicle.Position;
 		camera.target.Y -= TileSize / 2;
 
-		backGround.Position = vehicle.Position - halfOffset;
+		backGround.Position = new(vehicle.Position.X - halfOffset.X, -halfOffset.Y);
 	}
 
 	public override void OnResize()
@@ -131,7 +139,7 @@ internal class DeeperScene : Scene
 		halfOffset = new Vector2(ScreenWidth / 2f, ScreenHeight / 2f);
 		camera.offset = halfOffset;
 		var fow = GetChildByName("Fow") as FowSpot;
-		fow?.OnResize(ScreenWidth, ScreenHeight);
+		fow?.UpdateViewport(halfOffset);
 	}
 
 	private void RenderMenu()
@@ -140,5 +148,15 @@ internal class DeeperScene : Scene
 		DrawFPS(15, 10);
 		DrawText($"position: ({vehicle.Position.X:N2}, {vehicle.Position.Y:N2})", 15, 40, 20, YELLOW);
 		DrawText($"resolution: {ScreenWidth} x {ScreenHeight}", 15, 60, 20, YELLOW);
+	}
+
+	private Rectangle GetMapFrame(int x, int y)
+	{
+		var frame = x == 0 || x == xTiles - 1 ? FrameGroundBrick :
+					y == yTiles-1 ? FrameGroundBrick :
+					y > 0 ? FrameGroundDirt :
+					x % 3 == 0 ? FrameGroundLine :
+					FrameGroundGrass;
+		return frame;
 	}
 }
