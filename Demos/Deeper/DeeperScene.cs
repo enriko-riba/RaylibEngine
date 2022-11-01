@@ -16,7 +16,7 @@ internal class DeeperScene : Scene
 	//---------------------------------
 	private readonly Rectangle FrameGroundLine = new(96, 64, TileSize, TileSize);
 	private readonly Rectangle FrameGroundGrass = new(96, 0, TileSize, TileSize);
-	private readonly Rectangle FrameGroundDirt = new(96,192, TileSize, TileSize);
+	private readonly Rectangle FrameGroundDirt = new(96, 192, TileSize, TileSize);
 	private readonly Rectangle FrameGroundBrick = new(272, 64, TileSize, TileSize);
 	private readonly Rectangle FrameFow = new(0, 192, 32, 32);
 
@@ -25,12 +25,12 @@ internal class DeeperScene : Scene
 	private readonly Sprite[] map = new Sprite[xTiles * yTiles];
 	private Camera2D camera;
 	private Vector2 halfOffset;
-		
+
 
 	public DeeperScene(string name) : base(name)
 	{
 		WindowTitle = name;
-		BackgroundColor = BLACK;		
+		BackgroundColor = BLACK;
 		halfOffset = new(ScreenWidth / 2, ScreenHeight / 2);
 		camera = new()
 		{
@@ -43,7 +43,7 @@ internal class DeeperScene : Scene
 		backGround = new TilingSprite(backTexture)
 		{
 			Width = ScreenWidth,
-			Height = ScreenHeight/2,
+			Height = ScreenHeight / 2,
 			Position = Vector2.Zero
 		};
 		AddChild(backGround);
@@ -55,7 +55,7 @@ internal class DeeperScene : Scene
 		for (int x = 0; x < xTiles; x++)
 		{
 			for (int y = 0; y < yTiles; y++)
-			{	
+			{
 				var mapTile = new Sprite(groundAtlas)
 				{
 					Frame = GetMapFrame(x, y),
@@ -125,7 +125,7 @@ internal class DeeperScene : Scene
 		if (vehicle.Position.Y < 0)
 			vehicle.Position = new(vehicle.Position.X, 0);
 
-		if (vehicle.Position.Y > TileSize * (yTiles-1))
+		if (vehicle.Position.Y > TileSize * (yTiles - 1))
 			vehicle.Position = new(vehicle.Position.X, TileSize * (yTiles - 1));
 
 		camera.target = vehicle.Position;
@@ -153,7 +153,7 @@ internal class DeeperScene : Scene
 	private Rectangle GetMapFrame(int x, int y)
 	{
 		var frame = x == 0 || x == xTiles - 1 ? FrameGroundBrick :
-					y == yTiles-1 ? FrameGroundBrick :
+					y == yTiles - 1 ? FrameGroundBrick :
 					y > 0 ? FrameGroundDirt :
 					x % 3 == 0 ? FrameGroundLine :
 					FrameGroundGrass;
