@@ -177,4 +177,6 @@ public class Sprite : Container, IDrawable
 		aabb.x -= origin.X;
 		aabb.y -= origin.Y;
 	}
+
+	public override string ToString() => $"{base.ToString()}, texture id: {Texture.id}, frame: ({Frame.x},{Frame.y},{Frame.width},{Frame.height})";
 }
