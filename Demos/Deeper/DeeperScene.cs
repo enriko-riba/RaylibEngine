@@ -18,7 +18,7 @@ internal class DeeperScene : Scene
 	private readonly Rectangle FrameGroundGrass = new(96, 0, TileSize, TileSize);
 	private readonly Rectangle FrameGroundDirt = new(96, 192, TileSize, TileSize);
 	private readonly Rectangle FrameGroundBrick = new(272, 64, TileSize, TileSize);
-	private readonly Rectangle FrameSpotMask = new(0, 192, 32, 32);
+	private readonly Rectangle FrameSpotMask = new(0, 192, TileSize, TileSize);
 
 	private readonly TilingSprite backGround;
 	private readonly Sprite vehicle;
@@ -84,13 +84,13 @@ internal class DeeperScene : Scene
 		AddChild(vehicle);
 
 		//	light spot mask around vehicle	
-		var fow = new VehicleSpotMask(groundAtlas, FrameSpotMask, TileSize * 0.25f, TileSize * 2f)
+		var spotMask = new VehicleSpotMask(groundAtlas, FrameSpotMask, TileSize * 0.25f, TileSize * 2f)
 		{
 			Position = new(-TileSize, 0),
 			Width = (xTiles + 2) * TileSize,
-			Height = yTiles * TileSize,
+			Height = (yTiles + 2) * TileSize,
 		};
-		AddChild(fow);
+		AddChild(spotMask);
 	}
 
 	public override void OnBeginDraw()
@@ -143,10 +143,10 @@ internal class DeeperScene : Scene
 
 	private void RenderMenu()
 	{
-		DrawRectangle(5, 5, 300, 80, BLACK);
+		DrawRectangle(5, 5, 300, 85, BLACK);
 		DrawFPS(15, 10);
-		DrawText($"position: ({vehicle.Position.X:N2}, {vehicle.Position.Y:N2})", 15, 40, 20, YELLOW);
-		DrawText($"resolution: {ScreenWidth} x {ScreenHeight}", 15, 60, 20, YELLOW);
+		DrawText("resolution:", 15, 40, 20, YELLOW); DrawText($"{ScreenWidth} x {ScreenHeight}", 130, 40, 20, WHITE);
+		DrawText("position:", 15, 60, 20, YELLOW); DrawText($"({vehicle.Position.X:N0}, {vehicle.Position.Y:N0})", 130, 60, 20, WHITE);
 	}
 
 	private Rectangle GetMapFrame(int x, int y)
