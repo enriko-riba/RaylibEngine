@@ -15,6 +15,6 @@ public class TilingSprite : Sprite, IDrawable
 	/// </summary>
 	public override void Draw()
 	{
-		Raylib.DrawTextureTiled(Texture, Frame, Dst, Origin, Angle, 1, Tint);
+		Raylib.DrawTextureTiled(Texture, Frame, Dst, Origin, Angle, 1f, Tint);
 	}
 }

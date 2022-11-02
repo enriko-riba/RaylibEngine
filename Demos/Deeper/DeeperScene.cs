@@ -39,7 +39,7 @@ internal class DeeperScene : Scene
 		};
 
 		var atlas = LoadTexture("./Assets/Atlas.png");
-		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
+		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_POINT);
 		SetTextureWrap(atlas, TextureWrap.TEXTURE_WRAP_CLAMP);
 		
 		//	static background texture		
@@ -67,11 +67,10 @@ internal class DeeperScene : Scene
 			}
 		}
 
-		//	players vehicle
-		
+		//	players vehicle		
 		vehicle = new Sprite(atlas, new(TileSize * xTiles / 2, 0), TileSize, TileSize)
 		{
-			Frame = new Rectangle(192, 192, TileSize, TileSize),
+			Frame = new Rectangle(464, 208, TileSize, TileSize),
 			Pivot = new(0.5f, 1f),
 			Anchor = new(0.5f, 1f),
 		};
@@ -100,8 +99,8 @@ internal class DeeperScene : Scene
 
 	public override void OnUpdate(float ellapsedSeconds)
 	{
-		const float Speed = TileSize * 15;
 		//	update vehicle position
+		const float Speed = TileSize * 15;
 		var speed = Speed * ellapsedSeconds;
 		vehicle.Position += IsKeyDown(KeyboardKey.KEY_RIGHT) ? new(speed, 0f) :
 							IsKeyDown(KeyboardKey.KEY_LEFT) ? new(-speed, 0f) :

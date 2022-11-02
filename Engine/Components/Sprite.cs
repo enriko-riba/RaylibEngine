@@ -32,7 +32,7 @@ public class Sprite : Container, IDrawable
 	}
 
 	public Sprite(Texture texture, Vector2 position) : this(texture)
-	{		
+	{
 		Position = position;
 	}
 
@@ -107,7 +107,7 @@ public class Sprite : Container, IDrawable
 		set
 		{
 			frame = value;
-			if(width==0) width = (int)frame.width;
+			if (width == 0) width = (int)frame.width;
 			if (height == 0) height = (int)frame.height;
 			UpdateDestinationRectangle();
 		}
@@ -174,7 +174,7 @@ public class Sprite : Container, IDrawable
 	/// </summary>
 	public virtual void Draw()
 	{
-		Raylib.DrawTexturePro(Texture, Frame, dst, origin, Angle, Tint);		
+		Raylib.DrawTexturePro(Texture, Frame, dst, origin, Angle, Tint);
 	}
 
 	private void UpdateDestinationRectangle()
