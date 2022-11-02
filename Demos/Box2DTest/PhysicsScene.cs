@@ -38,7 +38,8 @@ internal class PhysicsScene : Scene
 		WindowTitle = name;
 		BackgroundColor = DARKBROWN;
 		atlas = LoadTexture("./Assets/spr.png");
-		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_TRILINEAR);
+		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
+		SetTextureWrap(atlas, TextureWrap.TEXTURE_WRAP_CLAMP);
 
 		var w = GetScreenWidth();
 		var h = GetScreenHeight();
@@ -93,10 +94,9 @@ internal class PhysicsScene : Scene
 			var x = SpriteSize + Random.Shared.Next(0, 2) * BunnySize;
 			var y = Random.Shared.Next(0, 2) * BunnySize;
 			var position = new Vector2(Random.Shared.Next(0, w - BunnySize), Random.Shared.Next(0, BunnySize * 2));
-			var bunny = new Sprite(atlas)
+			var bunny = new Sprite(atlas, position, BunnySize, BunnySize)
 			{
 				Frame = new Rectangle(x, y, BunnySize, BunnySize),
-				Position = position,
 				Pivot = new(0.5f, 0.5f),
 				Anchor = new(0.5f, 0.5f),
 			};

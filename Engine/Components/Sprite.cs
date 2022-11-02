@@ -31,6 +31,18 @@ public class Sprite : Container, IDrawable
 		UpdateDestinationRectangle();
 	}
 
+	public Sprite(Texture texture, Vector2 position) : this(texture)
+	{		
+		Position = position;
+	}
+
+	public Sprite(Texture texture, Vector2 position, int width, int height) : this(texture, position)
+	{
+		this.width = width;
+		this.height = height;
+		UpdateDestinationRectangle();
+	}
+
 	/// <summary>
 	/// For debug only. Returns the texture destination rectangle.
 	/// </summary>
