@@ -22,7 +22,7 @@ internal class DeeperScene : Scene
 
 	private readonly TilingSprite backGround;
 	private readonly Sprite vehicle;
-	private readonly Sprite[] map = new Sprite[xTiles * yTiles];
+	private readonly Tile[] map = new Tile[xTiles * yTiles];
 	private Camera2D camera;
 	private Vector2 halfOffset;
 
@@ -65,7 +65,7 @@ internal class DeeperScene : Scene
 					Height = TileSize,
 				};
 				AddChild(mapTile);
-				map[x + y * xTiles] = mapTile;
+				map[x + y * xTiles] = new Tile(x, y, GetMapTileType(x, y), mapTile);
 			}
 		}
 
@@ -157,5 +157,13 @@ internal class DeeperScene : Scene
 					x % 3 == 0 ? FrameGroundLine :
 					FrameGroundGrass;
 		return frame;
+	}
+
+	private TileType GetMapTileType(int x, int y)
+	{
+		var tileType = x == 0 || x == xTiles - 1 ? TileType.Blocker :
+					   y == yTiles - 1 ? TileType.Blocker :
+					   y > 0 ? TileType.Dirt : TileType.Ground;
+		return tileType;
 	}
 }
