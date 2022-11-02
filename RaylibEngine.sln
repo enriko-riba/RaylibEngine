@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaylibEngine", "Engine\RaylibEngine.csproj", "{4BE1D39F-9BE7-43DC-97D3-1FE724A5C4A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9621E1CC-319A-4B85-BE96-054DFAE3B19F}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BunnyTest", "Demos\BunnyTest\BunnyTest.csproj", "{0DD97502-3DCB-4C7C-A09C-826E02D19C82}"
 EndProject
