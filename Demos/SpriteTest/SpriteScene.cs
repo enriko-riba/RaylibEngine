@@ -31,7 +31,7 @@ internal class SpriteScene : Scene
 		WindowTitle = name;
 		BackgroundColor = DARKBROWN;
 		atlas = LoadTexture("./Assets/spr.png");
-		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_TRILINEAR);
+		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
 		var w = GetScreenWidth();
 		var h = GetScreenHeight();
 
@@ -61,6 +61,8 @@ internal class SpriteScene : Scene
 			{
 				Frame = new Rectangle(x, y, BunnySize, BunnySize),
 				Position = new(Random.Shared.Next(0, w - BunnySize), Random.Shared.Next(0, h - BunnySize)),
+				Width = BunnySize,
+				Height = BunnySize
 			};
 			AddChild(bunnies[i]);
 		}
