@@ -38,10 +38,14 @@ internal class DeeperScene : Scene
 			zoom = 1f
 		};
 
-		//	static background texture
-		var backTexture = LoadTexture("./Assets/Background/blue.png");
-		backGround = new TilingSprite(backTexture)
+		var atlas = LoadTexture("./Assets/Atlas.png");
+		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
+		SetTextureWrap(atlas, TextureWrap.TEXTURE_WRAP_CLAMP);
+		
+		//	static background texture		
+		backGround = new TilingSprite(atlas)
 		{
+			Frame = new Rectangle(448, 0, 64, 64),
 			Width = ScreenWidth,
 			Height = ScreenHeight / 2,
 			Position = Vector2.Zero
@@ -49,20 +53,14 @@ internal class DeeperScene : Scene
 		AddChild(backGround);
 
 		//	ground map
-		var groundAtlas = LoadTexture("./Assets/Terrain.png");
-		SetTextureFilter(groundAtlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
-		SetTextureWrap(groundAtlas, TextureWrap.TEXTURE_WRAP_MIRROR_REPEAT);
 		for (int x = 0; x < xTiles; x++)
 		{
 			for (int y = 0; y < yTiles; y++)
 			{
-				var mapTile = new Sprite(groundAtlas)
+				var mapTile = new Sprite(atlas, new(x * TileSize, y * TileSize + TileSize / 2), TileSize, TileSize)
 				{
 					Frame = GetMapFrame(x, y),
-					Position = new(x * TileSize, y * TileSize + TileSize / 2),
 					Anchor = new(0.5f, 0.5f),
-					Width = TileSize,
-					Height = TileSize,
 				};
 				AddChild(mapTile);
 				map[x + y * xTiles] = new Tile(x, y, GetMapTileType(x, y), mapTile);
@@ -70,21 +68,17 @@ internal class DeeperScene : Scene
 		}
 
 		//	players vehicle
-		var atlas = LoadTexture("./Assets/spr.png");
-		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
-		vehicle = new Sprite(atlas)
+		
+		vehicle = new Sprite(atlas, new(TileSize * xTiles / 2, 0), TileSize, TileSize)
 		{
-			Frame = new Rectangle(0, 0, VehicleSize, VehicleSize),
-			Position = new(TileSize * xTiles / 2, 0),
+			Frame = new Rectangle(192, 192, TileSize, TileSize),
 			Pivot = new(0.5f, 1f),
 			Anchor = new(0.5f, 1f),
-			Width = TileSize,
-			Height = TileSize,
 		};
 		AddChild(vehicle);
 
 		//	light spot mask around vehicle	
-		var spotMask = new VehicleSpotMask(groundAtlas, FrameSpotMask, TileSize * 0.25f, TileSize * 2f)
+		var spotMask = new VehicleSpotMask(atlas, FrameSpotMask, TileSize * 0.25f, TileSize * 2f)
 		{
 			Position = new(-TileSize, 0),
 			Width = (xTiles + 2) * TileSize,
