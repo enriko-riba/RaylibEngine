@@ -7,7 +7,6 @@ using System.Numerics;
 internal class DeeperScene : Scene
 {
 	const int TileSize = 48;    //	dimensions of sprite frames inside the texture atlas
-	const int VehicleSize = 64; //	dimensions of sprite frames inside the texture atlas
 	const int xTiles = 100;
 	const int yTiles = 100;
 
@@ -21,7 +20,7 @@ internal class DeeperScene : Scene
 	private readonly Rectangle FrameSpotMask = new(0, 192, TileSize, TileSize);
 
 	private readonly TilingSprite backGround;
-	private readonly Sprite vehicle;
+	private readonly Vehicle vehicle;
 	private readonly Tile[] map = new Tile[xTiles * yTiles];
 	private Camera2D camera;
 	private Vector2 halfOffset;
@@ -68,7 +67,7 @@ internal class DeeperScene : Scene
 		}
 
 		//	players vehicle		
-		vehicle = new Sprite(atlas, new(TileSize * xTiles / 2, 0), TileSize, TileSize)
+		vehicle = new Vehicle(atlas, new(TileSize * xTiles / 2, 0), TileSize, TileSize)
 		{
 			Frame = new Rectangle(464, 208, TileSize, TileSize),
 			Pivot = new(0.5f, 1f),
@@ -97,26 +96,15 @@ internal class DeeperScene : Scene
 		RenderMenu();
 	}
 
-	public override void OnUpdate(float ellapsedSeconds)
+	public override void OnEndUpdate(float ellapsedSeconds)
 	{
-		//	update vehicle position
-		const float Speed = TileSize * 15;
-		var speed = Speed * ellapsedSeconds;
-		vehicle.Position += IsKeyDown(KeyboardKey.KEY_RIGHT) ? new(speed, 0f) :
-							IsKeyDown(KeyboardKey.KEY_LEFT) ? new(-speed, 0f) :
-							IsKeyDown(KeyboardKey.KEY_UP) ? new(0f, -speed) :
-							IsKeyDown(KeyboardKey.KEY_DOWN) ? new(0f, speed) :
-							Vector2.Zero;
-
+		//	limit vehicle position
 		if (vehicle.Position.X < TileSize)
 			vehicle.Position = new(TileSize, vehicle.Position.Y);
-
 		if (vehicle.Position.X > TileSize * (xTiles - 2))
 			vehicle.Position = new(TileSize * (xTiles - 2), vehicle.Position.Y);
-
 		if (vehicle.Position.Y < 0)
 			vehicle.Position = new(vehicle.Position.X, 0);
-
 		if (vehicle.Position.Y > TileSize * (yTiles - 1))
 			vehicle.Position = new(vehicle.Position.X, TileSize * (yTiles - 1));
 

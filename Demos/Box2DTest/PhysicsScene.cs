@@ -119,7 +119,7 @@ internal class PhysicsScene : Scene
 		world.DrawDebugData();
 	}
 
-	public override void OnUpdate(float ellapsedSeconds)
+	public override void OnBeginUpdate(float ellapsedSeconds)
 	{
 		accumulator += Math.Min(ellapsedSeconds, 0.25f);
 		while (accumulator >= TimeStep)

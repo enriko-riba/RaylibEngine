@@ -61,12 +61,13 @@ public abstract class Scene : Container, IDrawable
 			OnResize();
 		}
 
-		OnUpdate(ellapsedSeconds);
+		OnBeginUpdate(ellapsedSeconds);
         foreach (var child in Children)
         {
             if (child is IUpdateable uc) uc.Update(ellapsedSeconds);
         }
-    }
+		OnEndUpdate(ellapsedSeconds);
+	}
 
     /// <summary>
     /// Clears the background and renders the current scene and all <see cref="IDrawable"/> children.
@@ -126,12 +127,19 @@ public abstract class Scene : Container, IDrawable
     /// </summary>
     public virtual void OnActivate() { }
 
-    /// <summary>
-    /// Invoked from <see cref="SceneManager"/>.
-    /// Note: the base class has no implementation, if overridden in a derived class invoking base.OnUpdate does nothing and should be omitted.
-    /// </summary>
-    /// <param name="ellapsedSeconds">passed time in milliseconds</param>
-    public virtual void OnUpdate(float ellapsedSeconds) { }
+	/// <summary>
+	/// Invoked from <see cref="SceneManager"/>.
+	/// Note: the base class has no implementation, if overridden in a derived class invoking base.OnBeginUpdate does nothing and should be omitted.
+	/// </summary>
+	/// <param name="ellapsedSeconds">passed time in milliseconds</param>
+	public virtual void OnBeginUpdate(float ellapsedSeconds) { }
+
+	/// <summary>
+	/// Invoked from <see cref="SceneManager"/>.
+	/// Note: the base class has no implementation, if overridden in a derived class invoking base.OnEndUpdate does nothing and should be omitted.
+	/// </summary>
+	/// <param name="ellapsedSeconds">passed time in milliseconds</param>
+	public virtual void OnEndUpdate(float ellapsedSeconds) { }
 
 	/// <summary>
 	/// Invoked from <see cref="SceneManager"/>.

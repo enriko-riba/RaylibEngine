@@ -67,7 +67,7 @@ internal class GameScene : Scene
         }
         DrawSnake();
 	}
-	public override void OnUpdate(float ellapsedSeconds)
+	public override void OnBeginUpdate(float ellapsedSeconds)
     {
         //  animate collide-able objects
         var dtSeconds = ellapsedSeconds / 1000d;
