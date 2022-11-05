@@ -5,27 +5,14 @@ using RaylibEngine.SceneManagement;
 using System.Numerics;
 
 internal class DeeperScene : Scene
-{
-	const int TileSize = 48;    //	dimensions of sprite frames inside the texture atlas
-	const int MapWidth = 100;
-	const int MapHeight = 100;
-
-	//---------------------------------
-	//	Atlas frame sizes
-	//---------------------------------
-	private readonly Rectangle FrameGroundLine = new(96, 64, TileSize, TileSize);
-	private readonly Rectangle FrameGroundGrass = new(96, 0, TileSize, TileSize);
-	private readonly Rectangle FrameGroundDirt = new(96, 192, TileSize, TileSize);
-	private readonly Rectangle FrameGroundBrick = new(272, 64, TileSize, TileSize);
-	private readonly Rectangle FrameGroundLevel = new(48, 192, TileSize, TileSize);
-	private readonly Rectangle FrameSpotMask = new(354, 0, 4, 256);
-
-	private readonly TilingSprite backGround;
+{	
+	private readonly Rectangle FrameSpotMask = new(354, 0, 32, 256);
+	private readonly TilingSprite skyBackground;
 	private readonly Vehicle vehicle;
-	private readonly Tile[] map = new Tile[MapWidth * MapHeight];
+	private readonly Map map;
+
 	private Camera2D camera;
 	private Vector2 halfOffset;
-
 
 	public DeeperScene(string name) : base(name)
 	{
@@ -39,36 +26,28 @@ internal class DeeperScene : Scene
 		};
 
 		var atlas = LoadTexture("./Assets/Atlas.png");
-		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_POINT);
+		SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
 		SetTextureWrap(atlas, TextureWrap.TEXTURE_WRAP_CLAMP);
 		
-		//	static background texture		
-		backGround = new TilingSprite(atlas)
+		//	static sky background texture		
+		skyBackground = new TilingSprite(atlas)
 		{
 			Frame = new Rectangle(448, 0, 64, 64),
 			Width = ScreenWidth,
-			Height = ScreenHeight / 2 + TileSize * 2,
+			Height = ScreenHeight / 2 + Map.TileSize * 2,
 			Position = Vector2.Zero
 		};
-		AddChild(backGround);
+		AddChild(skyBackground);
 
 		//	ground map
-		for (int x = 0; x < MapWidth; x++)
+		map = new Map(atlas);
+		foreach (var mapTile in map.Tiles)
 		{
-			for (int y = 0; y < MapHeight; y++)
-			{
-				var mapTile = new Sprite(atlas, new(x * TileSize, y * TileSize + TileSize / 2), TileSize, TileSize)
-				{
-					Frame = GetMapFrame(x, y),
-					Anchor = new(0.5f, 0.5f),
-				};
-				AddChild(mapTile);
-				map[x + y * MapWidth] = new Tile(x, y, GetMapTileType(x, y), mapTile);
-			}
+			AddChild(mapTile.Sprite);
 		}
 
 		//	players vehicle		
-		vehicle = new Vehicle(atlas, new(MapWidth / 2, 0), TileSize, map)
+		vehicle = new Vehicle(atlas, new(Map.Width / 2, 0), map)
 		{		
 			Pivot = new(0.5f, 1f),
 			Anchor = new(0.5f, 0f),
@@ -76,13 +55,15 @@ internal class DeeperScene : Scene
 		AddChild(vehicle);
 
 		//	light spot mask around vehicle	
-		var spotMask = new VehicleSpotMask(atlas, FrameSpotMask, TileSize * 0.25f, TileSize * 2f)
+		var spotMask = new VehicleSpotMask(atlas, FrameSpotMask, Map.TileSize * 0.25f, Map.TileSize * 2f)
 		{
-			Position = new(-TileSize, TileSize),
-			Width = (MapWidth + 2) * TileSize,
-			Height = (MapHeight + 2) * TileSize,
+			Width = (Map.Width + 3) * Map.TileSize,			//	few tiles larger then map to hide edge 
+			Height = (Map.Height + 2) * Map.TileSize,       //	gradient caused by bilinear filtering
+
+			Position = new(-Map.TileSize*2, Map.TileSize),	//	move gradient area outside of map
 		};
 		AddChild(spotMask);
+		spotMask.UpdateViewport(halfOffset + new Vector2(0, -Map.TileSize));	//	center of screen with offset due to vehicles bottom anchor
 	}
 
 	public override void OnBeginDraw()
@@ -99,19 +80,19 @@ internal class DeeperScene : Scene
 	public override void OnEndUpdate(float ellapsedSeconds)
 	{
 		//	limit vehicle position
-		if (vehicle.Position.X < TileSize)
-			vehicle.Position = new(TileSize, vehicle.Position.Y);
-		if (vehicle.Position.X > TileSize * (MapWidth - 2))
-			vehicle.Position = new(TileSize * (MapWidth - 2), vehicle.Position.Y);
+		if (vehicle.Position.X < Map.TileSize)
+			vehicle.Position = new(Map.TileSize, vehicle.Position.Y);
+		if (vehicle.Position.X > Map.TileSize * (Map.Width - 2))
+			vehicle.Position = new(Map.TileSize * (Map.Width - 2), vehicle.Position.Y);
 		if (vehicle.Position.Y < 0)
 			vehicle.Position = new(vehicle.Position.X, 0);
-		if (vehicle.Position.Y > TileSize * (MapHeight - 1))
-			vehicle.Position = new(vehicle.Position.X, TileSize * (MapHeight - 1));
+		if (vehicle.Position.Y > Map.TileSize * (Map.Height - 1))
+			vehicle.Position = new(vehicle.Position.X, Map.TileSize * (Map.Height - 1));
 
 		camera.target = vehicle.Position;
-		camera.target.Y -= TileSize / 2;
+		camera.target.Y -= Map.TileSize / 2;
 
-		backGround.Position = new(vehicle.Position.X - halfOffset.X, -halfOffset.Y - TileSize);
+		skyBackground.Position = new(vehicle.Position.X - halfOffset.X, -halfOffset.Y - Map.TileSize);
 	}
 
 	public override void OnResize()
@@ -119,18 +100,7 @@ internal class DeeperScene : Scene
 		halfOffset = new Vector2(ScreenWidth / 2f, ScreenHeight / 2f);
 		camera.offset = halfOffset;
 		var spotMask = GetChildByName(VehicleSpotMask.NodeName) as VehicleSpotMask;
-		spotMask?.UpdateViewport(halfOffset);
-	}
-
-	public bool IsTileWalkable((int x, int y) tilePosition)
-	{
-		if (tilePosition.x < 0 ||
-		   tilePosition.x > MapWidth - 1 ||
-		   tilePosition.y < 0 ||
-		   tilePosition.y > MapHeight - 1) return false;
-
-		var tile = map[tilePosition.x + tilePosition.y * MapWidth];
-		return tile.TileType != TileType.Blocker;
+		spotMask?.UpdateViewport(halfOffset + new Vector2(0, -Map.TileSize));
 	}
 
 	private void RenderMenu()
@@ -139,25 +109,6 @@ internal class DeeperScene : Scene
 		DrawFPS(15, 10);
 		DrawText("resolution:", 15, 40, 20, YELLOW); DrawText($"{ScreenWidth} x {ScreenHeight}", 130, 40, 20, WHITE);
 		DrawText("position:", 15, 60, 20, YELLOW); DrawText($"({vehicle.Position.X:N0}, {vehicle.Position.Y:N0})", 130, 60, 20, WHITE);
-		DrawText("tile:", 15, 80, 20, YELLOW); DrawText($"({vehicle.Position.X/TileSize:N0}, {vehicle.Position.Y/TileSize:N0})", 130, 80, 20, WHITE);
-	}
-
-	private Rectangle GetMapFrame(int x, int y)
-	{
-		var frame = x == 0 || x == MapWidth - 1 ? FrameGroundBrick :
-					y == MapHeight - 1 ? FrameGroundBrick :
-					y > 1 ? FrameGroundDirt :
-					y == 0 ? FrameGroundLevel :
-					x % 3 == 0 ? FrameGroundLine :
-					FrameGroundGrass;
-		return frame;
-	}
-
-	private TileType GetMapTileType(int x, int y)
-	{
-		var tileType = x == 0 || x == MapWidth - 1 ? TileType.Blocker :
-					   y == MapHeight - 1 ? TileType.Blocker :
-					   y > 0 ? TileType.Dirt : TileType.Ground;
-		return tileType;
-	}
+		DrawText("tile:", 15, 80, 20, YELLOW); DrawText($"({vehicle.Position.X/ Map.TileSize:N0}, {vehicle.Position.Y/ Map.TileSize:N0})", 130, 80, 20, WHITE);
+	}	
 }

@@ -1,6 +1,5 @@
 ﻿namespace Deeper.Entities;
 
-using Deeper;
 using RaylibEngine.Components;
 using RaylibEngine.Core;
 using System.Numerics;
@@ -10,24 +9,22 @@ internal class Vehicle : Sprite, IUpdateable
 	const float Speed = 400;
 
 	private readonly Dictionary<VehicleDirection, Rectangle> frames = new();
-	private readonly int tileSize;
-	private readonly Tile[] map;
+	private readonly Map map;
 
 	private VehicleDirection direction;
 	private (int x, int y) currentTilePosition;
 	private (int x, int y) nextTilePosition;
 	private Vector2 nextPosition;
 
-	public Vehicle(Texture texture, (int x, int y) tilePosition, int tileSize, Tile[] map)
-		: base(texture, new(tilePosition.x * tileSize, tilePosition.y * tileSize), tileSize, tileSize)
+	public Vehicle(Texture texture, (int x, int y) tilePosition, Map map)
+		: base(texture, new(tilePosition.x * Map.TileSize, tilePosition.y * Map.TileSize), Map.TileSize, Map.TileSize)
 	{
-		currentTilePosition = tilePosition;
-		this.tileSize = tileSize;
+		currentTilePosition = tilePosition;		
 		this.map = map;
-		frames[VehicleDirection.West] = new(416, 160, tileSize, tileSize);
-		frames[VehicleDirection.East] = new(464, 160, tileSize, tileSize);
-		frames[VehicleDirection.North] = new(416, 208, tileSize, tileSize);
-		frames[VehicleDirection.South] = new(464, 208, tileSize, tileSize);
+		frames[VehicleDirection.West] = new(416, 160, Map.TileSize, Map.TileSize);
+		frames[VehicleDirection.East] = new(464, 160, Map.TileSize, Map.TileSize);
+		frames[VehicleDirection.North] = new(416, 208, Map.TileSize, Map.TileSize);
+		frames[VehicleDirection.South] = new(464, 208, Map.TileSize, Map.TileSize);
 		Frame = frames[VehicleDirection.East];
 	}
 
@@ -55,14 +52,14 @@ internal class Vehicle : Sprite, IUpdateable
 					VehicleDirection.South => 1,
 					_ => 0
 				};
-				if (!(Parent as DeeperScene)?.IsTileWalkable(nextTilePosition) ?? false)
+				if (!map.IsTileWalkable(nextTilePosition))
 				{
 					direction = VehicleDirection.None;
 				}
 				else
 				{
 					Frame = frames[direction];
-					nextPosition = new Vector2(nextTilePosition.x, nextTilePosition.y) * tileSize;
+					nextPosition = new Vector2(nextTilePosition.x, nextTilePosition.y) * Map.TileSize;
 				}
 			}
 		}
@@ -90,8 +87,8 @@ internal class Vehicle : Sprite, IUpdateable
 			else
 			{
 				direction = VehicleDirection.None;
-				currentTilePosition.x = (int)(nextPosition.X / tileSize);
-				currentTilePosition.y = (int)(nextPosition.Y / tileSize);
+				currentTilePosition.x = (int)(nextPosition.X / Map.TileSize);
+				currentTilePosition.y = (int)(nextPosition.Y / Map.TileSize);
 				Position = nextPosition;
 			}
 		}

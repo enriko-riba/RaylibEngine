@@ -1,6 +1,6 @@
-﻿using RaylibEngine.Components;
+﻿namespace Deeper.Entities;
 
-namespace Deeper;
+using RaylibEngine.Components;
 
 internal record Tile(int X, int Y, TileType TileType, Sprite Sprite);
 

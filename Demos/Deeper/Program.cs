@@ -12,7 +12,7 @@ public static class Program
         SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_MSAA_4X_HINT));
 		InitWindow(0, 0, Title);
 		ToggleFullscreen();
-        SetTargetFPS(200);
+        SetTargetFPS(144);
 
         var mainScene = new DeeperScene(Title);
         SceneManager.ActivateScene(mainScene);
