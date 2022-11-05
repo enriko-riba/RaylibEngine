@@ -1,5 +1,8 @@
 ﻿namespace RaylibEngine.Core;
 
+/// <summary>
+/// Supports entity container operations.
+/// </summary>
 public interface IContainer
 {
     string? Name { get; init; }
