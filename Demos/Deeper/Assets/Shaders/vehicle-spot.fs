@@ -9,7 +9,7 @@ uniform sampler2D texture0;     //  from Raylib vertex shader
 
 uniform float inner;            // inner radius
 uniform float radius;           // alpha fades out to this radius
-uniform vec2 screenHalfSize;    // viewport dimensions
+uniform vec2 screenHalfSize;    // view-port dimensions
 
 void main()
 {

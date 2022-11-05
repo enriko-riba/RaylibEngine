@@ -1,5 +1,6 @@
 ﻿namespace Deeper;
 
+using Deeper.Entities;
 using RaylibEngine.SceneManagement;
 
 public static class Program
