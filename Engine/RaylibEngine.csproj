@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -7,11 +6,5 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Raylib-CsLo" Version="4.2.0.3" />
-	</ItemGroup>
-	<ItemGroup>
-	  <EditorConfigFiles Remove="C:\repos\RaylibEngine\.editorconfig" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Include="C:\repos\RaylibEngine\.editorconfig" />
-	</ItemGroup>
+	</ItemGroup>	
 </Project>

@@ -1,6 +1,6 @@
-﻿namespace RaySnake.Logic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace RaySnake.Logic;
 public class GameModel
 {
     public const int GridTilesX = 60;
@@ -56,9 +56,9 @@ public class GameModel
     private void InitGrid()
     {
         Grid = new TileType[GridTilesX, GridTilesY];
-        for (int j = 0; j < GridTilesY; j++)
+        for (var j = 0; j < GridTilesY; j++)
         {
-            for (int i = 0; i < GridTilesX; i++)
+            for (var i = 0; i < GridTilesX; i++)
             {
                 Grid[i, j] = (i, j) switch
                 {
@@ -80,7 +80,7 @@ public class GameModel
         var bodyTiles = Level + 1;
         x -= bodyTiles / 2;
         Tiles.AddLast(new SnakeTile(x - 1, y, Direction.West, FrameType.Head));
-        for (int i = 0; i < bodyTiles; i++)
+        for (var i = 0; i < bodyTiles; i++)
         {
             Tiles.AddLast(new SnakeTile(x + i, y, Direction.West, FrameType.Body));
 
@@ -91,7 +91,7 @@ public class GameModel
     {
         int x;
         int y;
-        for (int i = 0; i < FoodCount; i++)
+        for (var i = 0; i < FoodCount; i++)
         {
             do
             {
@@ -102,7 +102,7 @@ public class GameModel
         }
 
         var bombCount = 1 + (Level / 3);
-        for (int i = 0; i < bombCount; i++)
+        for (var i = 0; i < bombCount; i++)
         {
             do
             {
@@ -129,7 +129,7 @@ public class GameModel
         SnakeDirection = direction;
 
         //  create the head node on new position and check for food collision
-        SnakeTile previousCopy = CreateHeadTile(head.Value, direction);
+        var previousCopy = CreateHeadTile(head.Value, direction);
         var shouldGrow = HandleFoodCollision(previousCopy);
 
         //  movement algorithm:
@@ -160,7 +160,7 @@ public class GameModel
                 //  stop processing further nodes since the newly inserted node (after head) is processed
                 if (node.Previous == head) break;
 
-                var newTile = new SnakeTile(previousCopy.X, previousCopy.Y, previousCopy.Direction, FrameType.Body);
+                SnakeTile newTile = new(previousCopy.X, previousCopy.Y, previousCopy.Direction, FrameType.Body);
                 Tiles.AddAfter(node, newTile);
             }
 

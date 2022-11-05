@@ -1,8 +1,8 @@
-﻿namespace RaySnake.Scenes;
-
+﻿
 using RaylibEngine.SceneManagement;
 using static Raylib_CsLo.RayGui;
 
+namespace RaySnake.Scenes;
 internal class MenuScene : Scene
 {
     private readonly string originalTitle;
@@ -26,7 +26,7 @@ internal class MenuScene : Scene
         var w = GetScreenWidth();
         var h = GetScreenHeight();
 
-        DrawText(Text, (w - ts.X) / 2, h/3, FontSize, textColor);
+        DrawText(Text, (w - ts.X) / 2, h / 3, FontSize, textColor);
 
         if (GuiButton(new Rectangle((w - ButtonWidth) / 2, h - ButtonHeight - 10, ButtonWidth, ButtonHeight), "Play"))
         {

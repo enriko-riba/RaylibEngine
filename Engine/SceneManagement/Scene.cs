@@ -1,9 +1,9 @@
-﻿namespace RaylibEngine.SceneManagement;
-
+﻿
 using Raylib_CsLo;
 using RaylibEngine.Components;
 using RaylibEngine.Core;
 
+namespace RaylibEngine.SceneManagement;
 public abstract class Scene : Container, IDrawable
 {
     protected readonly Color textColor = Raylib.LIME;
@@ -42,7 +42,7 @@ public abstract class Scene : Container, IDrawable
         var isAltDown = Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT_ALT);
         if (isAltDown && Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
         {
-            int display = Raylib.GetCurrentMonitor();
+            var display = Raylib.GetCurrentMonitor();
             if (Raylib.IsWindowFullscreen())
             {
                 Raylib.SetWindowSize(Raylib.GetMonitorWidth(display) - 150, Raylib.GetMonitorHeight(display) - 50);

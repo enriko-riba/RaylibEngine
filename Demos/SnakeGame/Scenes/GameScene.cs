@@ -1,10 +1,10 @@
-﻿namespace RaySnake.Scenes;
-
+﻿
 using RaylibEngine.Components;
 using RaylibEngine.SceneManagement;
 using RaySnake.Logic;
 using System.Numerics;
 
+namespace RaySnake.Scenes;
 internal class GameScene : Scene
 {
     public static readonly string SceneName = nameof(GameScene);
@@ -51,8 +51,8 @@ internal class GameScene : Scene
         DrawMenuText(new(10, 20), $"Level: {gameModel.Level}  Food: {gameModel.FoodEaten}/{gameModel.FoodCount}", 30, ORANGE);
     }
 
-	public override void OnEndDraw()
-	{
+    public override void OnEndDraw()
+    {
         switch (gameModel.State)
         {
             case GameState.Paused:
@@ -66,8 +66,8 @@ internal class GameScene : Scene
                 break;
         }
         DrawSnake();
-	}
-	public override void OnBeginUpdate(float ellapsedSeconds)
+    }
+    public override void OnBeginUpdate(float ellapsedSeconds)
     {
         //  animate collide-able objects
         var dtSeconds = ellapsedSeconds / 1000d;
@@ -89,14 +89,14 @@ internal class GameScene : Scene
 
     #region sync visuals with model
     private void CreateObjects()
-    {       
+    {
         spriteObjects.Clear();
-		RemoveAllChildren();
-		AddChild(new Ground(0, Margin, GetScreenWidth(), GetScreenHeight(), DARKGREEN));
+        RemoveAllChildren();
+        AddChild(new Ground(0, Margin, GetScreenWidth(), GetScreenHeight(), DARKGREEN));
 
-        for (int j = 0; j < GameModel.GridTilesY; j++)
+        for (var j = 0; j < GameModel.GridTilesY; j++)
         {
-            for (int i = 0; i < GameModel.GridTilesX; i++)
+            for (var i = 0; i < GameModel.GridTilesX; i++)
             {
                 var x = i * TileSize;
                 var y = j * TileSize + Margin;
@@ -104,7 +104,7 @@ internal class GameScene : Scene
                 switch (gameModel.Grid[i, j])
                 {
                     case TileType.Block:
-                        var sprBlock = new Sprite(atlas)
+                        Sprite sprBlock = new(atlas)
                         {
                             Position = new(x, y),
                             Frame = new Rectangle(0, 64, TileSourceSize, TileSourceSize),
@@ -116,28 +116,28 @@ internal class GameScene : Scene
                         break;
 
                     case TileType.Bomb:
-                        var aspr = new AnimatedSprite(atlas)
+                        AnimatedSprite aspr = new(atlas)
                         {
                             Position = new(x, y),
                             Width = TileSize,
                             Height = TileSize,
-							Name = "Bomb"
+                            Name = "Bomb"
                         };
                         aspr.AddAnimation("bomb", new Rectangle[] {
                                     new(64, 128, TileSourceSize, TileSourceSize),
                                     new(128, 128, TileSourceSize, TileSourceSize),
-									new(192, 128, TileSourceSize, TileSourceSize),
-									new(64, 192, TileSourceSize, TileSourceSize),
+                                    new(192, 128, TileSourceSize, TileSourceSize),
+                                    new(64, 192, TileSourceSize, TileSourceSize),
                                     new(128, 192, TileSourceSize, TileSourceSize),
-									new(192, 192, TileSourceSize, TileSourceSize)
-						});
+                                    new(192, 192, TileSourceSize, TileSourceSize)
+                        });
                         aspr.Play("bomb", 4);
                         AddChild(aspr);
                         spriteObjects[new(i, j)] = aspr;
                         break;
 
                     case TileType.FoodFrog:
-                        var sprFrog = new Sprite(atlas)
+                        Sprite sprFrog = new(atlas)
                         {
                             Position = new(x, y),
                             Frame = new Rectangle(0, 128, TileSourceSize, TileSourceSize),
@@ -149,7 +149,7 @@ internal class GameScene : Scene
                         break;
 
                     case TileType.FoodApple:
-                        var sprApple = new Sprite(atlas)
+                        Sprite sprApple = new(atlas)
                         {
                             Position = new(x, y),
                             Frame = new Rectangle(0, 192, TileSourceSize, TileSourceSize),
@@ -166,9 +166,9 @@ internal class GameScene : Scene
 
     private void RemoveDeadSprites()
     {
-        for (int j = 0; j < GameModel.GridTilesY; j++)
+        for (var j = 0; j < GameModel.GridTilesY; j++)
         {
-            for (int i = 0; i < GameModel.GridTilesX; i++)
+            for (var i = 0; i < GameModel.GridTilesX; i++)
             {
                 if (gameModel.Grid[i, j] == TileType.Empty && spriteObjects.ContainsKey(new(i, j)))
                 {
@@ -193,7 +193,7 @@ internal class GameScene : Scene
         var direction = ReadGameInput();
         if (direction != Direction.None) requestedDirection = direction;
 
-        if(nextMove <= DateTime.Now)
+        if (nextMove <= DateTime.Now)
         {
             nextMove = DateTime.Now.AddSeconds(gameModel.MoveDurationSeconds);
             if (!gameModel.MoveSnake(requestedDirection == Direction.None ? gameModel.SnakeDirection : requestedDirection))
@@ -224,7 +224,7 @@ internal class GameScene : Scene
 
     private Direction ReadGameInput()
     {
-        Direction direction = IsKeyDown(KeyboardKey.KEY_RIGHT) ? Direction.East :
+        var direction = IsKeyDown(KeyboardKey.KEY_RIGHT) ? Direction.East :
                               IsKeyDown(KeyboardKey.KEY_LEFT) ? Direction.West :
                               IsKeyDown(KeyboardKey.KEY_UP) ? Direction.North :
                               IsKeyDown(KeyboardKey.KEY_DOWN) ? Direction.South :

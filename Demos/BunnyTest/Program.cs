@@ -1,7 +1,7 @@
-﻿namespace BunnyTest;
-
+﻿
 using RaylibEngine.SceneManagement;
 
+namespace BunnyTest;
 public static class Program
 {
     const string Title = "Raylib Bunny test";
@@ -17,7 +17,7 @@ public static class Program
         SetWindowPosition(1, 30);
         //SetTargetFPS(120);
 
-        var bunnyScene = new BunnyScene(Title);
+        BunnyScene bunnyScene = new(Title);
         SceneManager.ActivateScene(bunnyScene);
 
         //  main loop

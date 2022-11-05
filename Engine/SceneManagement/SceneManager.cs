@@ -1,7 +1,7 @@
-﻿namespace RaylibEngine.SceneManagement;
-
+﻿
 using Raylib_CsLo;
 
+namespace RaylibEngine.SceneManagement;
 /// <summary>
 /// Provides basic scene management.
 /// </summary>
@@ -31,7 +31,7 @@ public static class SceneManager
     /// <exception cref="ArgumentException"></exception>
     public static void ActivateScene(string sceneName)
     {
-        if (scenes.TryGetValue(sceneName, out Scene? scene))
+        if (scenes.TryGetValue(sceneName, out var scene))
         {
             ActivateScene(scene);
         }
@@ -76,8 +76,8 @@ public static class SceneManager
     {
         if (currentScene is not null)
         {
-			var dt = Raylib.GetFrameTime();
-			currentScene.Update(dt);
+            var dt = Raylib.GetFrameTime();
+            currentScene.Update(dt);
         }
     }
 

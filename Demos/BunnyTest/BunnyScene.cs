@@ -14,7 +14,7 @@ internal class BunnyScene : Scene
     public BunnyScene(string title) : base(title)
     {
         BackgroundColor = DARKBROWN;
-        for (int i = 0; i < texture.Length; i++)
+        for (var i = 0; i < texture.Length; i++)
         {
             texture[i] = LoadTexture($"./Assets/bunny{i + 1:D2}.png");
         }
@@ -35,25 +35,25 @@ internal class BunnyScene : Scene
         }
     }
 
-	public override void OnEndDraw()
-	{
-		DrawRectangle(2, 2, 350, 40, BLACK);
-		DrawFPS(5, 10);
-		DrawText($"bunnies: {bunnyCount}", 150, 10, 20, LIME);
-	}
+    public override void OnEndDraw()
+    {
+        DrawRectangle(2, 2, 350, 40, BLACK);
+        DrawFPS(5, 10);
+        DrawText($"bunnies: {bunnyCount}", 150, 10, 20, LIME);
+    }
 
-	private void CreateBunnies(int count)
+    private void CreateBunnies(int count)
     {
         var w = GetScreenWidth();
         var h = GetScreenHeight();
 
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
-            var bunny = new Bunny(texture[i % BUNNY_TEXTURE_COUNT], w, h)
+            Bunny bunny = new(texture[i % BUNNY_TEXTURE_COUNT], w, h)
             {
                 Position = new(Random.Shared.Next(0, w), Random.Shared.Next(10, 300)),
-				Tint = new Color(GetRandomValue(50, 240), GetRandomValue(80, 240), GetRandomValue(100, 240), 255),
-		};
+                Tint = new Color(GetRandomValue(50, 240), GetRandomValue(80, 240), GetRandomValue(100, 240), 255),
+            };
             AddChild(bunny);
         }
     }

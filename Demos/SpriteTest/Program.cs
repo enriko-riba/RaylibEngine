@@ -1,7 +1,7 @@
-﻿namespace SpriteTest;
-
+﻿
 using RaylibEngine.SceneManagement;
 
+namespace SpriteTest;
 public static class Program
 {
     const string Title = "Raylib Sprite test";
@@ -9,10 +9,10 @@ public static class Program
     public static int Main()
     {
         SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_MSAA_4X_HINT));
-		InitWindow(0, 0, Title);
-		
+        InitWindow(0, 0, Title);
+
         SetTargetFPS(144);
-        var bunnyScene = new SpriteScene(Title);
+        SpriteScene bunnyScene = new(Title);
         SceneManager.ActivateScene(bunnyScene);
 
         //  main loop
