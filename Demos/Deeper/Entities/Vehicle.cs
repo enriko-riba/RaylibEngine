@@ -6,15 +6,16 @@ using System.Numerics;
 
 internal class Vehicle : Sprite, IUpdateable
 {
-	const float Speed = 400;
+	const float Speed = Map.TileSize;
 
 	private readonly Dictionary<Direction, Rectangle> frames = new();
 	private readonly Map map;
 
 	private Direction direction;
 	private TilePosition currentTilePosition = new(0, 0);
-	private TilePosition nextTilePosition = new(0, 0);
-	private Vector2 nextPosition;
+	private TilePosition destinationTilePosition = new(0, 0);
+	private Vector2 destinationPosition;
+	private Vector2 transitionPosition;
 
 	public Vehicle(Texture texture, TilePosition tilePosition, Map map)
 		: base(texture, new(tilePosition.X * Map.TileSize, tilePosition.Y * Map.TileSize), Map.TileSize, Map.TileSize)
@@ -37,15 +38,16 @@ internal class Vehicle : Sprite, IUpdateable
 			//	if changing from no movement to movement update next position and sprite frame
 			if (direction != Direction.None)
 			{
-				nextTilePosition = GetNextTilePosition(currentTilePosition, direction);				
-				if (!map.IsTileWalkable(nextTilePosition))
+				destinationTilePosition = GetNextTilePosition(currentTilePosition, direction);
+				if (!map.IsTileWalkable(destinationTilePosition))
 				{
 					direction = Direction.None;
 				}
 				else
 				{
 					Frame = frames[direction];
-					nextPosition = new Vector2(nextTilePosition.X, nextTilePosition.Y) * Map.TileSize;
+					destinationPosition = new Vector2(destinationTilePosition.X, destinationTilePosition.Y) * Map.TileSize;
+					transitionPosition = Position;
 				}
 			}
 		}
@@ -53,30 +55,49 @@ internal class Vehicle : Sprite, IUpdateable
 		if (direction != Direction.None)
 		{
 			//	update vehicle position
-			var distance = Vector2.Distance(Position, nextPosition);
-			if (distance > 2)
+			var distance = Vector2.Distance(Position, destinationPosition);
+			if (distance > 0)
 			{
-				var movement = Math.Min(Speed * ellapsedSeconds, distance);
-				var p = Position;
-				p += direction switch
-				{
-					Direction.East => new(movement, 0f),
-					Direction.West => new(-movement, 0f),
-					Direction.North => new(0f, -movement),
-					Direction.South => new(0f, movement),
-					_ => Vector2.Zero
-				};
-				p.X = (float)Math.Round(p.X);
-				p.Y = (float)Math.Round(p.Y);
-				Position = p;
+				ApplyMovement(ellapsedSeconds, distance);
 			}
 			else
 			{
 				direction = Direction.None;
-				currentTilePosition.X = (int)(nextPosition.X / Map.TileSize);
-				currentTilePosition.Y = (int)(nextPosition.Y / Map.TileSize);
-				Position = nextPosition;
+				currentTilePosition.X = (int)(destinationPosition.X / Map.TileSize);
+				currentTilePosition.Y = (int)(destinationPosition.Y / Map.TileSize);
+				Position = destinationPosition;
+				map.Dig(destinationTilePosition);
 			}
+		}
+	}
+
+	private void ApplyMovement(float ellapsedSeconds, float distance)
+	{
+		//	velocity depends on tile type, empty and above ground tiles get bonus velocity
+		var nextTileType = map[destinationTilePosition].TileType;
+		var velocity = Speed * (nextTileType == TileType.Empty || nextTileType == TileType.Ground ? 2.5f : 1);
+
+		//	limit travel distance to destination distance
+		var movement = Math.Min(velocity * ellapsedSeconds, distance);
+
+		var tmp = transitionPosition;
+		tmp += direction switch
+		{
+			Direction.East => new(movement, 0f),
+			Direction.West => new(-movement, 0f),
+			Direction.North => new(0f, -movement),
+			Direction.South => new(0f, movement),
+			_ => Vector2.Zero
+		};
+		transitionPosition = tmp;
+
+		// vehicle position is rounded to avoid issues with tile border flickering
+		// if rounded coordinates differ from sprite position update sprite
+		tmp.X = (float)Math.Round(tmp.X);
+		tmp.Y = (float)Math.Round(tmp.Y);
+		if (tmp.X != Position.X || tmp.Y != Position.Y)
+		{
+			Position = tmp;
 		}
 	}
 

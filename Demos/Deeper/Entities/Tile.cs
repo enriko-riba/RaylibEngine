@@ -13,12 +13,12 @@ internal class TilePosition
 	public int Y { get; set; }
 }
 
-internal record Tile(TilePosition Position, TileType TileType, Sprite Sprite);
+internal record Tile(TilePosition Position, TileType TileType, Sprite? Sprite);
 
 internal enum TileType
 {
 	Empty,
-	Blocker,
 	Ground,
 	Dirt,
+	Blocker,
 }

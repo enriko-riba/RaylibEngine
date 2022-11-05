@@ -14,7 +14,7 @@ uniform vec2 screenHalfSize;    // view-port dimensions
 void main()
 {
     vec4 texelColor = texture(texture0, fragTexCoord);
-    float alpha = texelColor.z;    
+    float alpha = texelColor.a;    
     float d = distance(gl_FragCoord.xy, screenHalfSize) - radius;
 
     if (d > radius)

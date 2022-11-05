@@ -12,7 +12,8 @@ internal class Map
 	private readonly Rectangle FrameGrass = new(96, 0, TileSize, TileSize);
 	private readonly Rectangle FrameDirt = new(96, 192, TileSize, TileSize);
 	private readonly Rectangle FrameBrick = new(272, 64, TileSize, TileSize);
-	private readonly Rectangle FrameTransparent = new(48, 192, TileSize, TileSize);
+	private readonly Rectangle FrameDigged = new(0, 192, TileSize, TileSize);
+	private readonly Rectangle FrameTransparent = new(0, 178, 12, 12);
 
 	private readonly Tile[] tiles = new Tile[Width * Height];
 
@@ -23,22 +24,24 @@ internal class Map
 			for (int y = 0; y < Height; y++)
 			{
 				var position = new TilePosition(x, y);
-				var mapTile = new Sprite(atlas, new(x * TileSize, y * TileSize + TileSize / 2), TileSize, TileSize)
+				var sprite = new Sprite(atlas, new(x * TileSize, y * TileSize + TileSize / 2), TileSize, TileSize)
 				{
 					Frame = GetBasicMapLayoutFrame(position),
 					Anchor = new(0.5f, 0.5f),
 				};				
-				tiles[x + y * Width] = new Tile(position, GetMapTileType(position), mapTile);
+				tiles[x + y * Width] = new Tile(position, GetMapTileType(position), sprite);
 			}
 		}
 	}
 
 	public Tile[] Tiles => tiles;
 
+	public Tile this[ TilePosition tp] => tiles[tp.X + tp.Y * Width];
+
 	/// <summary>
 	/// Checks if the given tile position is walkable.
 	/// </summary>
-	/// <param name="position"></param>
+	/// <param name="position">tile position</param>
 	/// <returns></returns>
 	public bool IsTileWalkable(TilePosition position)
 	{
@@ -52,10 +55,27 @@ internal class Map
 	}
 
 	/// <summary>
+	/// Digs a tile at the given position.
+	/// </summary>
+	/// <param name="position">tile position</param>
+	public void Dig(TilePosition position)
+	{
+		if(position.Y == 0) return;
+
+		var index = position.X + position.Y * Width;
+		var tile = tiles[index];
+		if(tile.TileType != TileType.Blocker && tile.TileType != TileType.Empty && tile.Sprite is not null)
+		{
+			// TODO: add switch on tile type for special actions
+			tile.Sprite.Frame = FrameDigged;
+			tiles[index] = tile with { TileType = TileType.Empty };			
+		}
+	}
+
+	/// <summary>
 	/// Gets frames for outer borders, ground level, top row and dirt fill.
 	/// </summary>
-	/// <param name="x">x tile position</param>
-	/// <param name="y">y tile position</param>
+	/// <param name="position">tile position</param>
 	/// <returns></returns>
 	private Rectangle GetBasicMapLayoutFrame(TilePosition position)
 	{
@@ -71,8 +91,7 @@ internal class Map
 	/// <summary>
 	/// Gets the basic tile types based on tile position.
 	/// </summary>
-	/// <param name="x">x tile position</param>
-	/// <param name="y">y tile position</param>
+	/// <param name="position">tile position</param>
 	/// <returns></returns>
 	private static TileType GetMapTileType(TilePosition position)
 	{
