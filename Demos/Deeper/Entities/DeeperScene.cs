@@ -1,9 +1,10 @@
 ﻿
+namespace Deeper.Entities;
+
 using RaylibEngine.Components;
 using RaylibEngine.SceneManagement;
 using System.Numerics;
 
-namespace Deeper.Entities;
 internal class DeeperScene : Scene
 {
     private readonly Rectangle FrameSpotMask = new(354, 0, 32, 256);
@@ -26,7 +27,6 @@ internal class DeeperScene : Scene
         };
 
         var atlas = LoadTexture("./Assets/Atlas.png");
-        //GenTextureMipmaps(&atlas);
         SetTextureWrap(atlas, TextureWrap.TEXTURE_WRAP_CLAMP);
         SetTextureFilter(atlas, TextureFilter.TEXTURE_FILTER_BILINEAR);
 
@@ -38,7 +38,7 @@ internal class DeeperScene : Scene
             Height = ScreenHeight / 2 + Map.TileSize * 2,
             Position = Vector2.Zero
         };
-        AddChild(skyBackground);
+        //AddChild(skyBackground);
 
         //	ground map
         map = new Map(atlas);
@@ -90,7 +90,7 @@ internal class DeeperScene : Scene
         //if (vehicle.Position.Y > Map.TileSize * (Map.Height - 1))
         //	vehicle.Position = new(vehicle.Position.X, Map.TileSize * (Map.Height - 1));
 
-        camera.target = vehicle.Position;
+        camera.target = new(vehicle.Position.X, vehicle.Position.Y);
         camera.target.Y -= Map.TileSize / 2;
 
         skyBackground.Position = new(vehicle.Position.X - halfOffset.X, -halfOffset.Y - Map.TileSize);

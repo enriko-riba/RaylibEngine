@@ -99,10 +99,10 @@ internal class SpriteScene : Scene
         }
 
         //	update sprite position
-        sprite.Position += IsKeyDown(KeyboardKey.KEY_RIGHT) ? new(1f, 0f) :
-                            IsKeyDown(KeyboardKey.KEY_LEFT) ? new(-1f, 0f) :
-                            IsKeyDown(KeyboardKey.KEY_UP) ? new(0f, -1f) :
-                            IsKeyDown(KeyboardKey.KEY_DOWN) ? new(0f, 1f) :
+        sprite.Position += IsKeyDown(KeyboardKey.KEY_RIGHT) ? new(1f, 0) :
+                            IsKeyDown(KeyboardKey.KEY_LEFT) ? new(-1f, 0) :
+                            IsKeyDown(KeyboardKey.KEY_UP) ? new(0, -1f) :
+                            IsKeyDown(KeyboardKey.KEY_DOWN) ? new(0, 1f) :
                             Vector2.Zero;
 
         //	update mouse hover status 

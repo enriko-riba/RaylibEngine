@@ -1,8 +1,9 @@
 ﻿
+namespace Deeper.Entities;
+
 using RaylibEngine.Components;
 using System.Numerics;
 
-namespace Deeper.Entities;
 internal class VehicleSpotMask : Sprite
 {
     public const string NodeName = "SpotMask";
@@ -24,7 +25,6 @@ internal class VehicleSpotMask : Sprite
 
         SetShaderValue(shdrSpot, innerUniformLocation, innerRadius, ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
         SetShaderValue(shdrSpot, radiusUniformLocation, outerRadius, ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
-        //SetShaderValue(shdrSpot, screenHalfUniformLocation, new Vector2(GetScreenWidth() / 2, GetScreenHeight() / 2), ShaderUniformDataType.SHADER_UNIFORM_VEC2);
     }
 
     public override void Draw()

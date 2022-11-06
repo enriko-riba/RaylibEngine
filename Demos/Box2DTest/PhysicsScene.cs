@@ -139,7 +139,8 @@ internal class PhysicsScene : Scene
             };
             if (spr != null)
             {
-                spr.Position = body.Position * world2ViewScale;
+                var pos = body.Position * world2ViewScale;
+                spr.Position = new Vector2(pos.X, pos.Y);
                 spr.Angle = (float)(body.GetAngle() * Helpers.RADIAN_2_DEGREE);
 
                 if (spr == rotor)

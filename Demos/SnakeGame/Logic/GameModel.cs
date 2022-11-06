@@ -9,6 +9,7 @@ public class GameModel
     private const float BaseVelocityTilesPerSecond = 4f;
     private const float VelocityLevelIncreaseSecond = 0.3f;
 
+    private LinkedList<SnakeTile> snakeTiles = new();
 
     public GameModel()
     {
@@ -42,7 +43,7 @@ public class GameModel
         SnakeDirection = Direction.West;
     }
 
-    public IEnumerable<SnakeTile> SnakeTiles => Tiles;
+    public IEnumerable<SnakeTile> SnakeTiles => snakeTiles;
 
     public float Velocity => BaseVelocityTilesPerSecond + (Level * VelocityLevelIncreaseSecond) + (FoodEaten * VelocityLevelIncreaseSecond / 2f);
     public float MoveDurationSeconds => 1f / Velocity;
@@ -74,18 +75,18 @@ public class GameModel
 
     private void InitSnake()
     {
-        Tiles.Clear();
+        snakeTiles.Clear();
         var x = GridTilesX / 2;
         var y = GridTilesY / 2;
         var bodyTiles = Level + 1;
         x -= bodyTiles / 2;
-        Tiles.AddLast(new SnakeTile(x - 1, y, Direction.West, FrameType.Head));
+        snakeTiles.AddLast(new SnakeTile(x - 1, y, Direction.West, FrameType.Head));
         for (var i = 0; i < bodyTiles; i++)
         {
-            Tiles.AddLast(new SnakeTile(x + i, y, Direction.West, FrameType.Body));
+            snakeTiles.AddLast(new SnakeTile(x + i, y, Direction.West, FrameType.Body));
 
         }
-        Tiles.AddLast(new SnakeTile(x + bodyTiles, y, Direction.West, FrameType.Tail));
+        snakeTiles.AddLast(new SnakeTile(x + bodyTiles, y, Direction.West, FrameType.Tail));
     }
     private void InitObjects()
     {
@@ -116,7 +117,6 @@ public class GameModel
 
     #region Snake movement
     public Direction SnakeDirection { get; private set; } = Direction.West;
-    public LinkedList<SnakeTile> Tiles { get; private set; } = new LinkedList<SnakeTile>();
 
     /// <summary>
     /// Moves the snake one tile in the given direction.
@@ -125,7 +125,7 @@ public class GameModel
     /// <returns>true if the snake has moved, false if it was blocked</returns>
     public bool MoveSnake(Direction direction)
     {
-        var head = Tiles.First!;
+        var head = snakeTiles.First!;
         SnakeDirection = direction;
 
         //  create the head node on new position and check for food collision
@@ -161,7 +161,7 @@ public class GameModel
                 if (node.Previous == head) break;
 
                 SnakeTile newTile = new(previousCopy.X, previousCopy.Y, previousCopy.Direction, FrameType.Body);
-                Tiles.AddAfter(node, newTile);
+                snakeTiles.AddAfter(node, newTile);
             }
 
             node = node.Next;
@@ -169,7 +169,7 @@ public class GameModel
         while (node != null);
 
         //  make sure tail has the direction of previous tile
-        Tiles.Last!.Value.Direction = Tiles.Last.Previous!.Value.Direction;
+        snakeTiles.Last!.Value.Direction = snakeTiles.Last.Previous!.Value.Direction;
 
 
         //  check for collisions       
@@ -184,11 +184,11 @@ public class GameModel
     /// <returns>true if snake has collided</returns>
     private bool HasHeadCollided()
     {
-        var headTile = Tiles.First!.Value;
+        var headTile = snakeTiles.First!.Value;
         var isCollission = Grid[headTile.X, headTile.Y] == TileType.Block || Grid[headTile.X, headTile.Y] == TileType.Bomb;
         if (!isCollission)
         {
-            foreach (var tile in Tiles.Skip(1))
+            foreach (var tile in snakeTiles.Skip(1))
             {
                 if (headTile.X == tile.X && headTile.Y == tile.Y)
                 {

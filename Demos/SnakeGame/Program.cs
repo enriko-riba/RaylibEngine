@@ -20,7 +20,7 @@ public static class Program
         SetWindowPosition(0, 0);
         SetTargetFPS(120);
 
-        MenuScene startScene = new(Title);
+        var startScene = new MenuScene(Title);
         SceneManager.ActivateScene(startScene);
 
         //  main loop

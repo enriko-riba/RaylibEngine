@@ -40,10 +40,11 @@ public static class Box2DHelper
 
     public static Body CreateBody(this World world, Sprite sprite, BodyType bodyType, IEnumerable<FixtureDef> fixtureDefs, bool isBullet, float angularVelocity, Vector2 scale, object? userData)
     {
+        var pos = new Vector2(sprite.Position.X, sprite.Position.Y) * scale;
         BodyDef bd = new()
         {
             type = bodyType,
-            position = sprite.Position * scale,
+            position = pos,
             linearDamping = 0,
             allowSleep = true,
             awake = true,

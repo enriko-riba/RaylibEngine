@@ -1,7 +1,7 @@
-﻿
+﻿namespace Deeper.Entities;
+
 using RaylibEngine.Components;
 
-namespace Deeper.Entities;
 internal class TilePosition
 {
     public TilePosition(int x, int y)

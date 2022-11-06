@@ -1,15 +1,16 @@
-﻿
+﻿namespace Deeper.Entities;
+
 using RaylibEngine.Components;
 using RaylibEngine.Core;
 using System.Numerics;
 
-namespace Deeper.Entities;
 internal class Vehicle : Sprite, IUpdateable
 {
     const float Speed = Map.TileSize;
 
     private readonly Dictionary<Direction, Rectangle> frames = new();
     private readonly Map map;
+    private readonly Sprite diggingBackground;
 
     private Direction direction;
     private readonly TilePosition currentTilePosition = new(0, 0);
@@ -27,28 +28,36 @@ internal class Vehicle : Sprite, IUpdateable
         frames[Direction.North] = new(416, 208, Map.TileSize, Map.TileSize);
         frames[Direction.South] = new(464, 208, Map.TileSize, Map.TileSize);
         Frame = frames[Direction.East];
+        Name = "Vehicle";
+
+        diggingBackground = new Sprite(texture, Vector2.Zero, Map.TileSize + 6, Map.TileSize + 6)
+        {
+            Name = "DiggingBack",
+            Frame = new(392, 96, Map.TileSize, Map.TileSize),
+            Anchor = new(0.5f, 0f),
+            Visible = false,
+        };
+        AddChild(diggingBackground);
     }
 
     public void Update(float ellapsedSeconds)
     {
         if (direction == Direction.None)
         {
-            direction = GetDirectionInput();
-
-            //	if changing from no movement to movement update next position and sprite frame
-            if (direction != Direction.None)
+            //	if we here is a movement request set destination and sprite frame
+            var dir = GetDirectionInput();
+            if (dir != Direction.None)
             {
-                destinationTilePosition = GetNextTilePosition(currentTilePosition, direction);
-                if (!map.IsTileWalkable(destinationTilePosition))
+                destinationTilePosition = GetNextTilePosition(currentTilePosition, dir);
+                if (map.IsTileWalkable(destinationTilePosition))
                 {
-                    direction = Direction.None;
-                }
-                else
-                {
-                    Frame = frames[direction];
+                    Frame = frames[dir];
                     destinationPosition = new Vector2(destinationTilePosition.X, destinationTilePosition.Y) * Map.TileSize;
                     transitionPosition = Position;
-                }
+                    direction = dir;
+                    var tileType = map[destinationTilePosition].TileType;
+                    diggingBackground.Visible = tileType != TileType.Empty && tileType != TileType.Blocker && tileType != TileType.Ground;
+                }                
             }
         }
 
@@ -67,6 +76,7 @@ internal class Vehicle : Sprite, IUpdateable
                 currentTilePosition.Y = (int)(destinationPosition.Y / Map.TileSize);
                 Position = destinationPosition;
                 map.Dig(destinationTilePosition);
+                diggingBackground.Visible = false;
             }
         }
     }

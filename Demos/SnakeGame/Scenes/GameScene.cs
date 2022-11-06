@@ -90,8 +90,8 @@ internal class GameScene : Scene
     #region sync visuals with model
     private void CreateObjects()
     {
-        spriteObjects.Clear();
         RemoveAllChildren();
+        spriteObjects.Clear();
         AddChild(new Ground(0, Margin, GetScreenWidth(), GetScreenHeight(), DARKGREEN));
 
         for (var j = 0; j < GameModel.GridTilesY; j++)
