@@ -1,8 +1,8 @@
-﻿
+﻿namespace RaylibEngine.Components;
+
 using Raylib_CsLo;
 using RaylibEngine.Core;
 
-namespace RaylibEngine.Components;
 /// <summary>
 /// Basic 2D sprite, renders a texture or part of it and enables positioning, anchoring, scaling, pivoting, rotations and tinting.
 /// </summary>
@@ -15,6 +15,12 @@ public class TilingSprite : Sprite, IDrawable
     /// </summary>
     public override void Draw()
     {
+        if (IsDirty)
+        {
+            UpdateDestinationRectangle();
+            IsDirty = false;
+        }
+
         Raylib.DrawTextureTiled(Texture, Frame, Dst, Origin, Angle, 1f, Tint);
     }
 }

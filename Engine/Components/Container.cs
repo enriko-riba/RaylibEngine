@@ -8,24 +8,43 @@ public class Container : IContainer, IActionQueue
 {
     private readonly List<IContainer> children = new();
     private readonly Queue<Action> queuedActions = new();
+    private IContainer? parent;
 
-    public IContainer? Parent { get; set; }
+    protected event Action? OnParentChanged;
+
+    public IContainer? Parent { 
+        get => parent; 
+        set 
+        { 
+            parent = value;
+            OnParentChanged?.Invoke();
+        } 
+    }
+
     public IEnumerable<IContainer> Children => children;
 
     public string? Name { get; init; }
 
+    /// <summary>
+    /// Removes all children during the next update phase.    
+    /// </summary>
     public void RemoveAllChildren()
     {
+        var copy = children.ToList();
         queuedActions.Enqueue(() =>
         {
-            foreach (var child in children)
+            foreach (var child in copy)
             {
                 child.Parent = null;
             }
-            children.Clear();
+            copy.Clear();
         });
     }
 
+    /// <summary>
+    /// Removes the child from container node graph.
+    /// </summary>
+    /// <param name="child"></param>
     public void RemoveChild(IContainer child)
     {
         queuedActions.Enqueue(() =>

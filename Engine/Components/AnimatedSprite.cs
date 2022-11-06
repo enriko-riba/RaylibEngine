@@ -1,8 +1,8 @@
-﻿
+﻿namespace RaylibEngine.Components;
+
 using Raylib_CsLo;
 using RaylibEngine.Core;
 
-namespace RaylibEngine.Components;
 /// <summary>
 /// 2D sprite with textures atlas containing multiple frames drawn in a sequence.
 /// </summary>

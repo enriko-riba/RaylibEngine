@@ -1,10 +1,11 @@
 ﻿
+namespace RaylibEngine.SceneManagement;
+
 using Raylib_CsLo;
 using RaylibEngine.Components;
 using RaylibEngine.Core;
 
-namespace RaylibEngine.SceneManagement;
-public abstract class Scene : Container, IDrawable
+public abstract class Scene : Container
 {
     protected readonly Color textColor = Raylib.LIME;
 
@@ -27,12 +28,7 @@ public abstract class Scene : Container, IDrawable
     /// Returns the screen height in pixels.
     /// </summary>
     public int ScreenHeight => height;
-
-    /// <summary>
-    /// Always returns true, exists just for <see cref="IDrawable"/> support.
-    /// </summary>
-    public bool Visible { get => true; set { } }
-
+   
     /// <summary>
     /// Invokes <see cref="Scene.OnUpdate(int)"/> on the active scene followed by <see cref="IUpdateable.Update(int)"/> on each child implementing <see cref="IUpdateable"/>.
     /// </summary>
@@ -88,7 +84,7 @@ public abstract class Scene : Container, IDrawable
     {
         width = Raylib.GetScreenWidth();
         height = Raylib.GetScreenHeight();
-        this.OnActivate();
+        OnActivate();
     }
 
     /// <summary>
@@ -130,8 +126,8 @@ public abstract class Scene : Container, IDrawable
             {
                 if (dc.Visible)
                 {
-                    dc.Draw();
                     RenderChildren(child);
+                    dc.Draw();
                 }
             }
         }
