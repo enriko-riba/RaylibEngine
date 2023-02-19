@@ -1,5 +1,6 @@
 ﻿namespace RaylibEngine.Core;
 
+using Raylib_CsLo;
 using System.Numerics;
 
 /// <summary>
@@ -18,4 +19,5 @@ public interface IDrawable2D : IDrawable
     Vector2 Position { get; }
     Vector2 Pivot { get; }
     Vector2 Anchor { get; }
+    Rectangle Dst { get; }
 }

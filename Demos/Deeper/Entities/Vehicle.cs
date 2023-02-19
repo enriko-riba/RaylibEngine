@@ -30,11 +30,11 @@ internal class Vehicle : Sprite, IUpdateable
         Frame = frames[Direction.East];
         Name = "Vehicle";
 
-        diggingBackground = new Sprite(texture, Vector2.Zero, Map.TileSize + 6, Map.TileSize + 6)
+        diggingBackground = new Sprite(texture, Vector2.Zero, Map.TileSize + 3, Map.TileSize + 3)
         {
             Name = "DiggingBack",
             Frame = new(392, 96, Map.TileSize, Map.TileSize),
-            Anchor = new(0.5f, 0f),
+            Anchor = new(0.5f, 1f),
             Visible = false,
         };
         AddChild(diggingBackground);

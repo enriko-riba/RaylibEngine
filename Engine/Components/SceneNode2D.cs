@@ -6,9 +6,11 @@ using System.Numerics;
 
 public abstract class SceneNode2D : SceneNode, IDrawable2D
 {
+    protected Vector2 worldPosition = Vector2.Zero;
+    protected float worldAngle = 0;
+
     protected Rectangle dst;
     protected Vector2 position = Vector2.Zero;
-    protected Vector2 worldPosition = Vector2.Zero;
     protected Vector2 pivot = Vector2.Zero;
     protected Vector2 anchor = Vector2.Zero;
     protected int width;
@@ -19,17 +21,15 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
     protected Rectangle frame;
 
     /// <summary>
-    /// For debug only. Returns the texture destination rectangle.
+    /// Returns the texture destination rectangle.
     /// </summary>
     public Rectangle Dst => dst;
 
     /// <summary>
     /// Axis aligned bounding box.
     /// </summary>
-    public Rectangle Aabb
-    {
-        get => aabb;
-    }
+    public Rectangle Aabb => aabb;
+   
 
     /// <summary>
     /// The texture to be rendered.
@@ -61,15 +61,14 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
         get => angle;
         set
         {
-            angle = value;
-            IsDirty = true;
+            if(angle != value)
+            {
+                angle = value;
+                worldAngle = angle;
+                IsDirty = true;
+            }
         }
     }
-
-    /// <summary>
-    /// Returns the read-only texture origin.
-    /// </summary>
-    public Vector2 Origin => origin;
 
     /// <summary>
     /// Color filter. Default is white which equals to no filtering.
@@ -107,7 +106,7 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
     }
 
     /// <summary>
-    /// Center of rotation.
+    /// Node offset in regard to its position.
     /// </summary>
     public Vector2 Anchor
     {

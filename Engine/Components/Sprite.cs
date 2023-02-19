@@ -1,10 +1,10 @@
 ﻿
+namespace RaylibEngine.Components;
+
 using Raylib_CsLo;
 using RaylibEngine.Core;
 using System.Numerics;
-using System.Security.Cryptography;
 
-namespace RaylibEngine.Components;
 /// <summary>
 /// Basic 2D sprite, renders a texture or part of it and enables positioning, anchoring, scaling, pivoting, rotations and tinting.
 /// </summary>
@@ -39,15 +39,14 @@ public class Sprite : SceneNode2D
     /// </summary>
     public override void Draw()
     {
-
         if (Parent != null && Parent is IDrawable2D drawable)
         {
-            var tmp = drawable.Position + Position;
+            var tmp = new Vector2(drawable.Dst.X, drawable.Dst.Y) + Position; ;//drawable.Position + Position;
             if (tmp != worldPosition)
             {
                 worldPosition = tmp;
                 IsDirty = true;
-            }
+            }           
         }
 
         if (IsDirty)
@@ -55,7 +54,7 @@ public class Sprite : SceneNode2D
             UpdateDestinationRectangle();
             IsDirty = false;
         }
-        Raylib.DrawTexturePro(Texture, Frame, Dst, Origin, Angle, Tint);
+        Raylib.DrawTexturePro(Texture, Frame, Dst, origin, Angle, Tint);
     }
 
     private void HandleOnParentChanged()
