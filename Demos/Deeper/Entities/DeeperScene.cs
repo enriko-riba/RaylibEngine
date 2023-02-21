@@ -56,7 +56,7 @@ internal class DeeperScene : Scene
         AddChild(vehicle);
 
         //	light spot mask around vehicle	
-        VehicleSpotMask spotMask = new(atlas, FrameSpotMask, Map.TileSize * 0.25f, Map.TileSize * 2.0f)
+        VehicleSpotMask spotMask = new(atlas, FrameSpotMask, Map.TileSize * 1.75f, Map.TileSize * 3.5f)
         {
             Width = (Map.Width + 3) * Map.TileSize,             //	few tiles larger then map to hide edge 
             Height = (Map.Height + 2) * Map.TileSize,           //	gradient caused by bilinear filtering
