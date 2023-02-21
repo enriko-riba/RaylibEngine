@@ -29,16 +29,16 @@ internal class ColliderScene : Scene
     private bool isDebugRenderingOn = true;
 
     private const float TimeStep = 1f / 75f;    //	fixed physics simulation time step
-    float accumulator = 0f;                     //	physics simulation time accumulator
+    float accumulator;                          //	physics simulation time accumulator
     double polygonReductionTolerance = 1.25;
 
     //--------------------------
     // for debug rendering
     //--------------------------
-    private byte[] byteMap;
-    private byte[] bitMap;
-    private IReadOnlyList<Vector2> edges;
-    private IReadOnlyList<Vector2> smoothEdges;
+    private byte[] byteMap = default!;
+    private byte[] bitMap = default!;
+    private IReadOnlyList<Vector2> edges = default!;
+    private IReadOnlyList<Vector2> smoothEdges = default!;
 
     private int bunnyTypeIndex = -1;
 
@@ -58,7 +58,6 @@ internal class ColliderScene : Scene
         debugRenderer.AppendFlags(Box2D.NetStandard.Dynamics.World.Callbacks.DrawFlags.Shape);
         debugRenderer.AppendFlags(Box2D.NetStandard.Dynamics.World.Callbacks.DrawFlags.CenterOfMass);
         world.SetDebugDraw(debugRenderer);
-
 
         //	create rotating sprite from atlas
         rotor = new Sprite(atlas)

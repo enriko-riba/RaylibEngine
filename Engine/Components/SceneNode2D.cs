@@ -7,7 +7,7 @@ using System.Numerics;
 public abstract class SceneNode2D : SceneNode, IDrawable2D
 {
     protected Vector2 worldPosition = Vector2.Zero;
-    protected float worldAngle = 0;
+    protected float worldAngle;
 
     protected Rectangle dst;
     protected Vector2 position = Vector2.Zero;
