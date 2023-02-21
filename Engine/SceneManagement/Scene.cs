@@ -28,7 +28,7 @@ public abstract class Scene : Container
     /// Returns the screen height in pixels.
     /// </summary>
     public int ScreenHeight => height;
-   
+
     /// <summary>
     /// Invokes <see cref="Scene.OnUpdate(int)"/> on the active scene followed by <see cref="IUpdateable.Update(int)"/> on each child implementing <see cref="IUpdateable"/>.
     /// </summary>

@@ -38,7 +38,7 @@ internal class DeeperScene : Scene
             Height = ScreenHeight / 2 + Map.TileSize * 2,
             Position = Vector2.Zero
         };
-        //AddChild(skyBackground);
+        AddChild(skyBackground);
 
         //	ground map
         map = new Map(atlas);
@@ -56,11 +56,10 @@ internal class DeeperScene : Scene
         AddChild(vehicle);
 
         //	light spot mask around vehicle	
-        VehicleSpotMask spotMask = new(atlas, FrameSpotMask, Map.TileSize * 0.25f, Map.TileSize * 2f)
+        VehicleSpotMask spotMask = new(atlas, FrameSpotMask, Map.TileSize * 0.25f, Map.TileSize * 2.0f)
         {
-            Width = (Map.Width + 3) * Map.TileSize,         //	few tiles larger then map to hide edge 
-            Height = (Map.Height + 2) * Map.TileSize,       //	gradient caused by bilinear filtering
-
+            Width = (Map.Width + 3) * Map.TileSize,             //	few tiles larger then map to hide edge 
+            Height = (Map.Height + 2) * Map.TileSize,           //	gradient caused by bilinear filtering
             Position = new(-Map.TileSize * 2, Map.TileSize),    //	move gradient area outside of map
         };
         AddChild(spotMask);

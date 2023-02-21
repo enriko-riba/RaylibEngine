@@ -2,9 +2,12 @@
 
 using RaylibEngine.Core;
 
+/// <summary>
+/// Abstract drawable container.
+/// </summary>
 public abstract class SceneNode : Container, IDrawable
 {
-    public bool Visible { get ; set; }
+    public bool Visible { get; set; }
 
     public bool IsDirty { get; set; }
 

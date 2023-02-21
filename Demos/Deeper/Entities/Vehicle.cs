@@ -30,7 +30,7 @@ internal class Vehicle : Sprite, IUpdateable
         Frame = frames[Direction.East];
         Name = "Vehicle";
 
-        diggingBackground = new Sprite(texture, Vector2.Zero, Map.TileSize + 3, Map.TileSize + 3)
+        diggingBackground = new Sprite(texture, Vector2.Zero, Map.TileSize, Map.TileSize)
         {
             Name = "DiggingBack",
             Frame = new(392, 96, Map.TileSize, Map.TileSize),
@@ -44,7 +44,7 @@ internal class Vehicle : Sprite, IUpdateable
     {
         if (direction == Direction.None)
         {
-            //	if we here is a movement request set destination and sprite frame
+            //	if there is a movement request set destination and sprite frame
             var dir = GetDirectionInput();
             if (dir != Direction.None)
             {
@@ -57,7 +57,7 @@ internal class Vehicle : Sprite, IUpdateable
                     direction = dir;
                     var tileType = map[destinationTilePosition].TileType;
                     diggingBackground.Visible = tileType != TileType.Empty && tileType != TileType.Blocker && tileType != TileType.Ground;
-                }                
+                }
             }
         }
 
@@ -102,13 +102,9 @@ internal class Vehicle : Sprite, IUpdateable
         transitionPosition = tmp;
 
         // vehicle position is rounded to avoid issues with tile border flickering
-        // if rounded coordinates differ from sprite position update sprite
         tmp.X = (float)Math.Round(tmp.X);
         tmp.Y = (float)Math.Round(tmp.Y);
-        if (tmp.X != Position.X || tmp.Y != Position.Y)
-        {
-            Position = tmp;
-        }
+        Position = tmp;
     }
 
     private static Direction GetDirectionInput()

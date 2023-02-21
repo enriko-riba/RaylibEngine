@@ -29,7 +29,7 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
     /// Axis aligned bounding box.
     /// </summary>
     public Rectangle Aabb => aabb;
-   
+
 
     /// <summary>
     /// The texture to be rendered.
@@ -47,7 +47,7 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
             if (position != value)
             {
                 position = value;
-                worldPosition = position;                
+                worldPosition = position;
                 IsDirty = true;
             }
         }
@@ -61,7 +61,7 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
         get => angle;
         set
         {
-            if(angle != value)
+            if (angle != value)
             {
                 angle = value;
                 worldAngle = angle;

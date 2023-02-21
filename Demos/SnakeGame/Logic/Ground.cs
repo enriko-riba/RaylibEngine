@@ -6,7 +6,7 @@ using System.Numerics;
 namespace RaySnake.Logic;
 internal class Ground : Container, IDrawable
 {
-   
+
     private readonly int width;
     private readonly int height;
     private readonly Color color;
@@ -23,7 +23,7 @@ internal class Ground : Container, IDrawable
     public bool Visible { get; set; }
 
     public float Angle => 0;
-   
+
     public Vector3 Position { get; }
 
     public bool IsDirty => false;

@@ -39,14 +39,14 @@ public class Sprite : SceneNode2D
     /// </summary>
     public override void Draw()
     {
-        if (Parent != null && Parent is IDrawable2D drawable)
+        if (Parent is IDrawable2D drawable)
         {
             var tmp = new Vector2(drawable.Dst.X, drawable.Dst.Y) + Position; ;//drawable.Position + Position;
             if (tmp != worldPosition)
             {
                 worldPosition = tmp;
                 IsDirty = true;
-            }           
+            }
         }
 
         if (IsDirty)

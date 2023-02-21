@@ -12,13 +12,14 @@ public class Container : IContainer, IActionQueue
 
     protected event Action? OnParentChanged;
 
-    public IContainer? Parent { 
-        get => parent; 
-        set 
-        { 
+    public IContainer? Parent
+    {
+        get => parent;
+        set
+        {
             parent = value;
             OnParentChanged?.Invoke();
-        } 
+        }
     }
 
     public IEnumerable<IContainer> Children => children;
