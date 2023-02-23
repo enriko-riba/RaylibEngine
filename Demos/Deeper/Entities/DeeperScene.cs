@@ -77,17 +77,10 @@ internal class DeeperScene : Scene
         RenderMenu();
     }
 
-    public override void OnEndUpdate(float ellapsedSeconds)
-    {
-        //	limit vehicle position
-        //if (vehicle.Position.X < Map.TileSize)
-        //	vehicle.Position = new(Map.TileSize, vehicle.Position.Y);
-        //if (vehicle.Position.X > Map.TileSize * (Map.Width - 2))
-        //	vehicle.Position = new(Map.TileSize * (Map.Width - 2), vehicle.Position.Y);
+    public override void OnEndUpdate(float elapsedSeconds)
+    {        
         if (vehicle.Position.Y < 0)
-            vehicle.Position = new(vehicle.Position.X, 0);
-        //if (vehicle.Position.Y > Map.TileSize * (Map.Height - 1))
-        //	vehicle.Position = new(vehicle.Position.X, Map.TileSize * (Map.Height - 1));
+            vehicle.Position = new(vehicle.Position.X, 0);        
 
         camera.target = new(vehicle.Position.X, vehicle.Position.Y);
         camera.target.Y -= Map.TileSize / 2;

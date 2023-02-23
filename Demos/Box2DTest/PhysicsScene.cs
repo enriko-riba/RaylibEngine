@@ -15,7 +15,7 @@ internal class PhysicsScene : Scene
     private const int BunnySize = 32;   //	dimensions of rendered sprite
 
     private const int BunnyCount = 50;
-    private int totalBunnies = 0;
+    private int totalBunnies;
 
     /// <summary>
     /// Converts physics world to view.
@@ -31,7 +31,7 @@ internal class PhysicsScene : Scene
     private bool isDebugRenderingOn = true;
 
     private const float TimeStep = 1f / 75f;    //	fixed physics simulation time step
-    float accumulator = 0f;                     //	physics simulation time accumulator
+    float accumulator;                          //	physics simulation time accumulator
 
     public PhysicsScene(string name) : base(name)
     {
@@ -119,9 +119,9 @@ internal class PhysicsScene : Scene
         world.DrawDebugData();
     }
 
-    public override void OnBeginUpdate(float ellapsedSeconds)
+    public override void OnBeginUpdate(float elapsedSeconds)
     {
-        accumulator += Math.Min(ellapsedSeconds, 0.25f);
+        accumulator += Math.Min(elapsedSeconds, 0.25f);
         while (accumulator >= TimeStep)
         {
             world.Step(TimeStep, 20, 100);

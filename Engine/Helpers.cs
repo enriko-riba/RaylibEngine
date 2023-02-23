@@ -102,7 +102,7 @@ public static class Helpers
     }
 
     /// <summary>
-    /// Returns the rectangle vertices's rotated around the given pivot point.
+    /// Returns the rectangle vertices rotated around the given pivot point.
     /// </summary>
     /// <param name="rectangle"></param>
     /// <param name="pivot">the center of rotation</param>

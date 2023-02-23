@@ -32,8 +32,8 @@ public abstract class Scene : Container
     /// <summary>
     /// Invokes <see cref="Scene.OnUpdate(int)"/> on the active scene followed by <see cref="IUpdateable.Update(int)"/> on each child implementing <see cref="IUpdateable"/>.
     /// </summary>
-    /// <param name="ellapsedSeconds"></param>
-    public void Update(float ellapsedSeconds)
+    /// <param name="elapsedSeconds"></param>
+    public void Update(float elapsedSeconds)
     {
         var isAltDown = Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_ALT) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT_ALT);
         if (isAltDown && Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
@@ -57,12 +57,12 @@ public abstract class Scene : Container
             OnResize();
         }
 
-        OnBeginUpdate(ellapsedSeconds);
+        OnBeginUpdate(elapsedSeconds);
         foreach (var child in Children)
         {
-            if (child is IUpdateable uc) uc.Update(ellapsedSeconds);
+            if (child is IUpdateable uc) uc.Update(elapsedSeconds);
         }
-        OnEndUpdate(ellapsedSeconds);
+        OnEndUpdate(elapsedSeconds);
         ExecuteActions(this);
     }
 
@@ -110,7 +110,7 @@ public abstract class Scene : Container
         {
             action();
         }
-        queuedActions.Clear();
+        //queuedActions.Clear();
     }
 
     /// <summary>
@@ -154,15 +154,15 @@ public abstract class Scene : Container
     /// Invoked from <see cref="SceneManager"/>.
     /// Note: the base class has no implementation, if overridden in a derived class invoking base.OnBeginUpdate does nothing and should be omitted.
     /// </summary>
-    /// <param name="ellapsedSeconds">passed time in milliseconds</param>
-    public virtual void OnBeginUpdate(float ellapsedSeconds) { }
+    /// <param name="elapsedSeconds">passed time in milliseconds</param>
+    public virtual void OnBeginUpdate(float elapsedSeconds) { }
 
     /// <summary>
     /// Invoked from <see cref="SceneManager"/>.
     /// Note: the base class has no implementation, if overridden in a derived class invoking base.OnEndUpdate does nothing and should be omitted.
     /// </summary>
-    /// <param name="ellapsedSeconds">passed time in milliseconds</param>
-    public virtual void OnEndUpdate(float ellapsedSeconds) { }
+    /// <param name="elapsedSeconds">passed time in milliseconds</param>
+    public virtual void OnEndUpdate(float elapsedSeconds) { }
 
     /// <summary>
     /// Invoked from <see cref="SceneManager"/>.

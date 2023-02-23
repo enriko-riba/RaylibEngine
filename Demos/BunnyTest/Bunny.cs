@@ -29,9 +29,9 @@ internal class Bunny : Sprite, IUpdateable
 
     }
 
-    public void Update(float ellapsedSeconds)
+    public void Update(float elapsedSeconds)
     {
-        speedY += gravity * ellapsedSeconds;
+        speedY += gravity * elapsedSeconds;
 
         Position += new Vector2(speedX, speedY);
         if (Position.X > right)

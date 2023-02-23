@@ -40,7 +40,7 @@ internal class Vehicle : Sprite, IUpdateable
         AddChild(diggingBackground);
     }
 
-    public void Update(float ellapsedSeconds)
+    public void Update(float elapsedSeconds)
     {
         if (direction == Direction.None)
         {
@@ -67,7 +67,7 @@ internal class Vehicle : Sprite, IUpdateable
             var distance = Vector2.Distance(Position, destinationPosition);
             if (distance > 0)
             {
-                ApplyMovement(ellapsedSeconds, distance);
+                ApplyMovement(elapsedSeconds, distance);
             }
             else
             {
@@ -81,14 +81,14 @@ internal class Vehicle : Sprite, IUpdateable
         }
     }
 
-    private void ApplyMovement(float ellapsedSeconds, float distance)
+    private void ApplyMovement(float elapsedSeconds, float distance)
     {
         //	velocity depends on tile type, empty and above ground tiles get bonus velocity
         var nextTileType = map[destinationTilePosition].TileType;
         var velocity = Speed * (nextTileType == TileType.Empty || nextTileType == TileType.Ground ? 2.5f : 1);
 
         //	limit travel distance to destination distance
-        var movement = Math.Min(velocity * ellapsedSeconds, distance);
+        var movement = Math.Min(velocity * elapsedSeconds, distance);
 
         var tmp = transitionPosition;
         tmp += direction switch

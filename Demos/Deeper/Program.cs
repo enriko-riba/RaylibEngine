@@ -6,12 +6,21 @@ namespace Deeper;
 public static class Program
 {
     const string Title = "Deeper";
+    const int ScreenWidth = 1920;
+    const int ScreenHeight = 1080;
+    const int MinScreenWidth = 1440;
+    const int MinScreenHeight = 900;
 
     public static int Main()
     {
-        SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_MSAA_4X_HINT));
-        InitWindow(0, 0, Title);
-        ToggleFullscreen();
+        SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_VSYNC_HINT));
+        InitWindow(ScreenWidth, ScreenHeight, Title);
+        SetWindowMinSize(MinScreenWidth, MinScreenHeight);
+        
+        var img = LoadImage("./Assets/Spike Head/Idle.png");
+        SetWindowIcon(img);
+
+        //ToggleFullscreen();
         SetTargetFPS(144);
 
         DeeperScene mainScene = new(Title);
