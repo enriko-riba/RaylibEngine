@@ -8,7 +8,7 @@ internal class VehicleSpotMask : Sprite
 {
     public const string NodeName = "SpotMask";
 
-    private readonly Shader shdrSpot;
+    private readonly Shader spotShader;
     private readonly int innerUniformLocation;
     private readonly int radiusUniformLocation;
     private readonly int screenHalfUniformLocation;
@@ -18,24 +18,24 @@ internal class VehicleSpotMask : Sprite
         Name = NodeName;
         Frame = srcFrame;
 
-        shdrSpot = LoadShader(null, "./Assets/Shaders/vehicle-spot.fs");
-        innerUniformLocation = GetShaderLocation(shdrSpot, "inner");
-        radiusUniformLocation = GetShaderLocation(shdrSpot, "radius");
-        screenHalfUniformLocation = GetShaderLocation(shdrSpot, "screenHalfSize");
+        spotShader = LoadShader(null, "./Assets/Shaders/vehicle-spot.fs");
+        innerUniformLocation = GetShaderLocation(spotShader, "inner");
+        radiusUniformLocation = GetShaderLocation(spotShader, "radius");
+        screenHalfUniformLocation = GetShaderLocation(spotShader, "screenHalfSize");
 
-        SetShaderValue(shdrSpot, innerUniformLocation, innerRadius, ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
-        SetShaderValue(shdrSpot, radiusUniformLocation, outerRadius, ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
+        SetShaderValue(spotShader, innerUniformLocation, innerRadius, ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
+        SetShaderValue(spotShader, radiusUniformLocation, outerRadius, ShaderUniformDataType.SHADER_UNIFORM_FLOAT);
     }
 
     public override void Draw()
     {
-        BeginShaderMode(shdrSpot);
+        BeginShaderMode(spotShader);
         base.Draw();
         EndShaderMode();
     }
 
     public void UpdateViewport(Vector2 halfSize)
     {
-        SetShaderValue(shdrSpot, screenHalfUniformLocation, halfSize, ShaderUniformDataType.SHADER_UNIFORM_VEC2);
+        SetShaderValue(spotShader, screenHalfUniformLocation, halfSize, ShaderUniformDataType.SHADER_UNIFORM_VEC2);
     }
 }

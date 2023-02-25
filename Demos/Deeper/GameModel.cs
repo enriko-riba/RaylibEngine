@@ -5,18 +5,36 @@ namespace Deeper;
 
 internal class GameModel
 {
+    public const float Speed = Map.TileSize*4;
+
     public GameModel(Map map)
     {
         Map = map;
+        map.GenerateBlockers(1500);
+        VehicleTilePosition = new(Map.Width / 2, 0);
     }
-
-    public float Depth => TransitionPosition.Y * Map.TileSize;
-
+    
+    /// <summary>
+    /// World map.
+    /// </summary>
     public Map Map { get; init; }
 
-    public TilePosition VehicleTilePosition = new(0, 0);
+    /// <summary>
+    /// Tile coordinates.
+    /// </summary>
+    public TilePosition VehicleTilePosition;
+
+    /// <summary>
+    /// Position for moving between two tiles.
+    /// </summary>
     public Vector2 TransitionPosition { get; set; }
 
+    /// <summary>
+    /// Digger depth.
+    /// </summary>
+    public float Depth => TransitionPosition.Y;
+
+    #region helper methods
     public static Direction GetDirectionInput()
     {
         return IsKeyDown(KeyboardKey.KEY_RIGHT) ? Direction.East :
@@ -41,13 +59,5 @@ internal class GameModel
         };
         return new TilePosition(x, y);
     }
-
-    public enum Direction
-    {
-        None,
-        North,
-        East,
-        South,
-        West
-    }
+    #endregion   
 }

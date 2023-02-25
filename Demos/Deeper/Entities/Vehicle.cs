@@ -7,8 +7,6 @@ using static Deeper.GameModel;
 
 internal class Vehicle : Sprite, IUpdateable
 {
-    const float Speed = Map.TileSize;
-
     private readonly Dictionary<Direction, Rectangle> frames = new();
     private readonly Sprite diggingBackground;
     private readonly GameModel gameModel;
@@ -75,6 +73,7 @@ internal class Vehicle : Sprite, IUpdateable
                 Position = destinationPosition;
                 gameModel.Map.Dig(destinationTilePosition);
                 diggingBackground.Visible = false;
+                gameModel.TransitionPosition = Position;
             }
         }
     }
@@ -83,10 +82,10 @@ internal class Vehicle : Sprite, IUpdateable
     {
         //	velocity depends on tile type, empty and above ground tiles get bonus velocity
         var nextTileType = gameModel.Map[destinationTilePosition].TileType;
-        var velocity = Speed * (nextTileType == TileType.Empty || nextTileType == TileType.Ground ? 2.5f : 1);
+        var velocity = Speed * (nextTileType == TileType.Empty || nextTileType == TileType.Ground ? 1 : 0.25);
 
         //	limit travel distance to destination distance
-        var movement = Math.Min(velocity * elapsedSeconds, distance);
+        var movement = (float)Math.Min(velocity * elapsedSeconds, distance);
 
         //var tmp = transitionPosition;
         gameModel.TransitionPosition += direction switch

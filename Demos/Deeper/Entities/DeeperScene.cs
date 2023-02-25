@@ -7,13 +7,12 @@ using System.Numerics;
 
 internal class DeeperScene : Scene
 {
-    private readonly Rectangle FrameSpotMask = new(354, 0, 32, 256);
+    private readonly Rectangle spotMaskSourceFrame = new(354, 0, 32, 256);
     private readonly TilingSprite skyBackground;
     private readonly Vehicle vehicle;
-
+    private readonly GameModel gameModel;
     private Camera2D camera;
     private Vector2 halfOffset;
-    private GameModel gameModel;
 
     public DeeperScene(string name) : base(name)
     {
@@ -42,14 +41,11 @@ internal class DeeperScene : Scene
 
         //	ground map
         var map = new Map(atlas);
+        gameModel = new GameModel(map);
         foreach (var mapTile in map.Tiles)
         {
             if (mapTile.Sprite is not null) AddChild(mapTile.Sprite);
         }
-        gameModel = new GameModel(map)
-        {
-            VehicleTilePosition = new(Map.Width / 2, 0)
-        };
 
         //	players vehicle		
         vehicle = new Vehicle(atlas, gameModel)
@@ -60,11 +56,14 @@ internal class DeeperScene : Scene
         AddChild(vehicle);
 
         //	light spot mask around vehicle	
-        VehicleSpotMask spotMask = new(atlas, FrameSpotMask, Map.TileSize * 1.75f, Map.TileSize * 3.5f)
+        var innerRadius = Map.TileSize * 1.75f;
+        var outerRadius = Map.TileSize * 3.5f;
+        VehicleSpotMask spotMask = new(atlas, spotMaskSourceFrame, innerRadius, outerRadius)
         {
-            Width = (Map.Width + 3) * Map.TileSize,             //	few tiles larger then map to hide edge 
-            Height = (Map.Height + 2) * Map.TileSize,           //	gradient caused by bilinear filtering
-            Position = new(-Map.TileSize * 2, Map.TileSize),    //	move gradient area outside of map
+            //	make size few tiles larger then map to hide edge gradient caused by bilinear filtering
+            Width = (Map.Width + 2) * Map.TileSize,             
+            Height = (Map.Height + 2) * Map.TileSize,           
+            Position = new(-Map.TileSize*2, Map.TileSize),    //	move gradient area outside of map
         };
         AddChild(spotMask);
         spotMask.UpdateViewport(halfOffset + new Vector2(0, -Map.TileSize));    //	center of screen with offset due to vehicles bottom anchor
@@ -86,9 +85,7 @@ internal class DeeperScene : Scene
         if (vehicle.Position.Y < 0)
             vehicle.Position = new(vehicle.Position.X, 0);        
 
-        camera.target = new(vehicle.Position.X, vehicle.Position.Y);
-        camera.target.Y -= Map.TileSize / 2;
-
+        camera.target = new(vehicle.Position.X, vehicle.Position.Y - Map.TileSize / 2);
         skyBackground.Position = new(vehicle.Position.X - halfOffset.X, -halfOffset.Y - Map.TileSize);
     }
 
