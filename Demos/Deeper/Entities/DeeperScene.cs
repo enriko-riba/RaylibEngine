@@ -10,10 +10,10 @@ internal class DeeperScene : Scene
     private readonly Rectangle FrameSpotMask = new(354, 0, 32, 256);
     private readonly TilingSprite skyBackground;
     private readonly Vehicle vehicle;
-    private readonly Map map;
 
     private Camera2D camera;
     private Vector2 halfOffset;
+    private GameModel gameModel;
 
     public DeeperScene(string name) : base(name)
     {
@@ -41,14 +41,18 @@ internal class DeeperScene : Scene
         AddChild(skyBackground);
 
         //	ground map
-        map = new Map(atlas);
+        var map = new Map(atlas);
         foreach (var mapTile in map.Tiles)
         {
             if (mapTile.Sprite is not null) AddChild(mapTile.Sprite);
         }
+        gameModel = new GameModel(map)
+        {
+            VehicleTilePosition = new(Map.Width / 2, 0)
+        };
 
         //	players vehicle		
-        vehicle = new Vehicle(atlas, new(Map.Width / 2, 0), map)
+        vehicle = new Vehicle(atlas, gameModel)
         {
             Pivot = new(0.5f, 1f),
             Anchor = new(0.5f, 0f),
@@ -98,10 +102,11 @@ internal class DeeperScene : Scene
 
     private void RenderMenu()
     {
-        DrawRectangle(5, 5, 300, 105, BLACK);
+        DrawRectangle(5, 5, 300, 125, BLACK);
         DrawFPS(15, 10);
         DrawText("resolution:", 15, 40, 20, YELLOW); DrawText($"{ScreenWidth} x {ScreenHeight}", 130, 40, 20, WHITE);
         DrawText("position:", 15, 60, 20, YELLOW); DrawText($"({vehicle.Position.X:N0}, {vehicle.Position.Y:N0})", 130, 60, 20, WHITE);
         DrawText("tile:", 15, 80, 20, YELLOW); DrawText($"({vehicle.Position.X / Map.TileSize:N0}, {vehicle.Position.Y / Map.TileSize:N0})", 130, 80, 20, WHITE);
+        DrawText("depth:", 15, 100, 20, YELLOW); DrawText($"{gameModel.Depth:N0}", 130, 100, 20, WHITE);
     }
 }
