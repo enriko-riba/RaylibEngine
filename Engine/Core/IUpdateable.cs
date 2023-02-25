@@ -5,5 +5,5 @@
 /// </summary>
 public interface IUpdateable
 {
-    void Update(float ellapsedSeconds);
+    void Update(float elapsedSeconds);
 }

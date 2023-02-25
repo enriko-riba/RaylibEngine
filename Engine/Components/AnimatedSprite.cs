@@ -30,11 +30,11 @@ public class AnimatedSprite : Sprite, IUpdateable
 
     public bool IsPlaying => !string.IsNullOrEmpty(currentSequence);
 
-    public void Update(float ellapsedSeconds)
+    public void Update(float elapsedSeconds)
     {
         if (IsPlaying)
         {
-            accumulator += ellapsedSeconds;
+            accumulator += elapsedSeconds;
             var secForFrame = 1f / Fps;
             if (accumulator >= secForFrame)
             {

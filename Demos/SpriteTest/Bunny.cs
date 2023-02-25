@@ -12,14 +12,14 @@ internal class Bunny : Sprite, IUpdateable
 
     public Bunny(Texture texture) : base(texture) { }
 
-    public void Update(float ellapsedSeconds)
+    public void Update(float elapsedSeconds)
     {
         // v = v0 + at
         // d = d0 + v0t + at^2/2, in our case d0 = 0 so we have d = v0t + at^2/2
         var v0 = velocity;
-        var at = ellapsedSeconds * GRAVITY * Height;
+        var at = elapsedSeconds * GRAVITY * Height;
         velocity = v0 + at;
-        var distance = v0 * ellapsedSeconds + (at * ellapsedSeconds / 2f);
+        var distance = v0 * elapsedSeconds + (at * elapsedSeconds / 2f);
         Position += (gravityDirection * distance);
 
         if (Position.Y > GetScreenHeight() + Height)

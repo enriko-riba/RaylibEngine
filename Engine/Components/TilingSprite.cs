@@ -18,9 +18,8 @@ public class TilingSprite : Sprite, IDrawable
         if (IsDirty)
         {
             UpdateDestinationRectangle();
-            IsDirty = false;
         }
 
-        Raylib.DrawTextureTiled(Texture, Frame, Dst, origin, Angle, 1f, Tint);
+        Raylib.DrawTextureTiled(Texture, Frame, Dst, origin, Angle, 1.0f, Tint);
     }
 }

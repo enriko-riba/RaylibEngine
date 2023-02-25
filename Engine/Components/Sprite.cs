@@ -41,7 +41,7 @@ public class Sprite : SceneNode2D
     {
         if (Parent is IDrawable2D drawable)
         {
-            var tmp = new Vector2(drawable.Dst.X, drawable.Dst.Y) + Position; ;//drawable.Position + Position;
+            var tmp = new Vector2(drawable.Dst.X, drawable.Dst.Y) + Position;
             if (tmp != worldPosition)
             {
                 worldPosition = tmp;
@@ -52,7 +52,6 @@ public class Sprite : SceneNode2D
         if (IsDirty)
         {
             UpdateDestinationRectangle();
-            IsDirty = false;
         }
         Raylib.DrawTexturePro(Texture, Frame, Dst, origin, Angle, Tint);
     }
@@ -73,6 +72,7 @@ public class Sprite : SceneNode2D
         aabb = dst.CalcAabbForRotation(new(dst.X + px, dst.Y + py), Angle);
         aabb.x -= origin.X;
         aabb.y -= origin.Y;
+        IsDirty = false;
     }
 
     public override string ToString() => $"{base.ToString()}, texture id: {Texture.id}, frame: ({Frame.x},{Frame.y},{Frame.width},{Frame.height})";

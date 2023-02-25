@@ -131,9 +131,9 @@ internal class ColliderScene : Scene
         RenderSpriteColliderEdges(Scale);
     }
 
-    public override void OnBeginUpdate(float ellapsedSeconds)
+    public override void OnBeginUpdate(float elapsedSeconds)
     {
-        accumulator += Math.Min(ellapsedSeconds, 0.25f);
+        accumulator += Math.Min(elapsedSeconds, 0.25f);
         while (accumulator >= TimeStep)
         {
             world.Step(TimeStep, 20, 100);

@@ -62,10 +62,7 @@ public static class SceneManager
     /// </summary>
     public static void Draw()
     {
-        if (currentScene is not null)
-        {
-            currentScene.Draw();
-        }
+        currentScene?.Draw();
     }
 
     /// <summary>
@@ -85,12 +82,9 @@ public static class SceneManager
     /// Invokes the <see cref="Scene.Update(int)"/> on the active scene which in turn updates all <see cref="Core.IUpdateable"/> child entities.
     /// Note: It is not mandatory to invoke this method, use if you want to provide your own update time interval.
     /// </summary>
-    /// <param name="dt">the elapsed time in milliseconds since last update</param>
-    public static void Update(int dt)
+    /// <param name="elapsedSeconds">the elapsed time in seconds since last update</param>
+    public static void Update(float elapsedSeconds)
     {
-        if (currentScene is not null)
-        {
-            currentScene.Update(dt);
-        }
+        currentScene?.Update(elapsedSeconds);
     }
 }

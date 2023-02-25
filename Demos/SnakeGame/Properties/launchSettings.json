@@ -1,11 +1,7 @@
 {
   "profiles": {
-    "ray-test": {
+    "snake": {
       "commandName": "Project"
-    },
-    "WSL": {
-      "commandName": "WSL2",
-      "distributionName": ""
     }
   }
 }

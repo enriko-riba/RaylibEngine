@@ -15,7 +15,6 @@ public static class Program
         SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE));
         InitWindow(ScreenWidth, ScreenHeight, Title);
         SetWindowPosition(1, 30);
-        //SetTargetFPS(120);
 
         BunnyScene bunnyScene = new(Title);
         SceneManager.ActivateScene(bunnyScene);

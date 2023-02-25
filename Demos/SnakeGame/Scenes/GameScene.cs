@@ -67,10 +67,10 @@ internal class GameScene : Scene
         }
         DrawSnake();
     }
-    public override void OnBeginUpdate(float ellapsedSeconds)
+    public override void OnBeginUpdate(float elapsedSeconds)
     {
         //  animate collide-able objects
-        var dtSeconds = ellapsedSeconds / 1000d;
+        var dtSeconds = elapsedSeconds / 1000d;
         totalSeconds += dtSeconds;
         var sin = (float)Math.Sin(totalSeconds) / 3f + 0.5f;
         blockingTileColor = Fade(PURPLE, sin);

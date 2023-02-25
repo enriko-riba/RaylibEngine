@@ -79,7 +79,7 @@ internal class SpriteScene : Scene
         RenderSprites();
     }
 
-    public override void OnBeginUpdate(float ellapsedSeconds)
+    public override void OnBeginUpdate(float elapsedSeconds)
     {
         //	update pivot, anchor and rotation states
         if (IsKeyPressed(KeyboardKey.KEY_SPACE))
