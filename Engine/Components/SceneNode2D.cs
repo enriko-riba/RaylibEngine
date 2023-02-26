@@ -37,7 +37,7 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
     public Texture Texture { get; set; }
 
     /// <summary>
-    /// Sprite position.
+    /// Sprite position in pixels.
     /// </summary>
     public Vector2 Position
     {

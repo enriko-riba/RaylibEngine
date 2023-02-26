@@ -15,6 +15,11 @@ public static class Program
     {
         SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_VSYNC_HINT));
         InitWindow(ScreenWidth, ScreenHeight, Title);
+        var monitorCount = GetMonitorCount();
+        if(monitorCount > 0 )
+        {
+            SetWindowMonitor(1);
+        }
         SetWindowMinSize(MinScreenWidth, MinScreenHeight);
         
         var img = LoadImage("./Assets/Spike Head/Idle.png");

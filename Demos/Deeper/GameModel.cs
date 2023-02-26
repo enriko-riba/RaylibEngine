@@ -5,18 +5,36 @@ namespace Deeper;
 
 internal class GameModel
 {
+    public const float Speed = Map.TileSize * 2.5f;
+
     public GameModel(Map map)
     {
         Map = map;
+        map.GenerateBlockers(500);
+        VehicleLocation = new(Map.Width / 2, 0);
     }
 
-    public float Depth => TransitionPosition.Y * Map.TileSize;
-
+    /// <summary>
+    /// World map.
+    /// </summary>
     public Map Map { get; init; }
 
-    public TilePosition VehicleTilePosition = new(0, 0);
+    /// <summary>
+    /// Vehicle tile grid location.
+    /// </summary>
+    public MapLocation VehicleLocation;
+
+    /// <summary>
+    /// Position for moving between two tiles.
+    /// </summary>
     public Vector2 TransitionPosition { get; set; }
 
+    /// <summary>
+    /// Digger depth.
+    /// </summary>
+    public float Depth => TransitionPosition.Y / 100.0f;
+
+    #region helper methods
     public static Direction GetDirectionInput()
     {
         return IsKeyDown(KeyboardKey.KEY_RIGHT) ? Direction.East :
@@ -25,29 +43,21 @@ internal class GameModel
                 IsKeyDown(KeyboardKey.KEY_DOWN) ? Direction.South : Direction.None;
     }
 
-    public static TilePosition GetNextTilePosition(TilePosition position, Direction direction)
+    public static MapLocation GetAdjacentLocation(MapLocation currentMapLocation, Direction direction)
     {
-        var x = position.X + direction switch
+        var x = currentMapLocation.X + direction switch
         {
             Direction.West => -1,
             Direction.East => 1,
             _ => 0
         };
-        var y = position.Y + direction switch
+        var y = currentMapLocation.Y + direction switch
         {
             Direction.North => -1,
             Direction.South => 1,
             _ => 0
         };
-        return new TilePosition(x, y);
+        return new MapLocation(x, y);
     }
-
-    public enum Direction
-    {
-        None,
-        North,
-        East,
-        South,
-        West
-    }
+    #endregion   
 }
