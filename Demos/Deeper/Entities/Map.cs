@@ -30,21 +30,21 @@ internal class Map
 
     public Tile[] Tiles => tiles;
 
-    public Tile this[TilePosition tp] => tiles[tp.X + tp.Y * Width];
+    public Tile this[MapLocation location] => tiles[location.X + location.Y * Width];
 
     /// <summary>
     /// Checks if the given tile position is walkable.
     /// </summary>
-    /// <param name="position">tile position</param>
+    /// <param name="location">tile position</param>
     /// <returns></returns>
-    public bool IsTileWalkable(TilePosition position)
+    public bool IsTileWalkable(MapLocation location)
     {
-        if (position.X < 0 ||
-           position.X > Width - 1 ||
-           position.Y < 0 ||
-           position.Y > Height - 1) return false;
+        if (location.X < 0 ||
+           location.X > Width - 1 ||
+           location.Y < 0 ||
+           location.Y > Height - 1) return false;
 
-        var tile = tiles[position.X + position.Y * Width];
+        var tile = tiles[location.X + location.Y * Width];
         return tile.TileType != TileType.Blocker;
     }
 
@@ -52,9 +52,9 @@ internal class Map
     /// Digs a tile at the given position.
     /// </summary>
     /// <param name="position">tile position</param>
-    public void Dig(TilePosition position)
+    public void Dig(MapLocation position)
     {
-        if (position.Y == 0) return;
+        if (position.Y <= 0) return;
 
         var index = position.X + position.Y * Width;
         var tile = tiles[index];
@@ -100,7 +100,7 @@ internal class Map
         {
             for (var y = 0; y < Height; y++)
             {
-                TilePosition position = new(x, y);
+                MapLocation position = new(x, y);
                 Sprite sprite = new(atlas, new(x * TileSize, y * TileSize + TileSize / 2), TileSize, TileSize)
                 {
                     Frame = GetBasicMapLayoutFrame(position),
@@ -116,7 +116,7 @@ internal class Map
     /// </summary>
     /// <param name="position">tile position</param>
     /// <returns></returns>
-    private Rectangle GetBasicMapLayoutFrame(TilePosition position)
+    private Rectangle GetBasicMapLayoutFrame(MapLocation position)
     {
         var frame = position.X == 0 || position.X == Width - 1 ? FrameBrick :
                     position.Y == Height - 1 ? FrameBrick :
@@ -132,7 +132,7 @@ internal class Map
     /// </summary>
     /// <param name="position">tile position</param>
     /// <returns></returns>
-    private static TileType GetMapTileType(TilePosition position)
+    private static TileType GetMapTileType(MapLocation position)
     {
         var tileType = position.X == 0 || position.X == Width - 1 ? TileType.Blocker :
                        position.Y == Height - 1 ? TileType.Blocker :

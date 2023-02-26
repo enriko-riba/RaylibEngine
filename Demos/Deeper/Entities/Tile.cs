@@ -1,10 +1,15 @@
 ﻿namespace Deeper.Entities;
 
 using RaylibEngine.Components;
+using System.Diagnostics;
 
-internal class TilePosition
+/// <summary>
+/// X and Y coordinates inside a map of tiles.
+/// </summary>
+[DebuggerDisplay("x={X} y={Y}")]
+internal class MapLocation
 {
-    public TilePosition(int x, int y)
+    public MapLocation(int x, int y)
     {
         X = x;
         Y = y;
@@ -13,7 +18,7 @@ internal class TilePosition
     public int Y { get; set; }
 }
 
-internal record Tile(TilePosition Position, TileType TileType, Sprite? Sprite);
+internal record Tile(MapLocation MapLocation, TileType TileType, Sprite? Sprite);
 
 internal enum TileType
 {

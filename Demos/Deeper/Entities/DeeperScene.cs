@@ -101,9 +101,9 @@ internal class DeeperScene : Scene
     {
         DrawRectangle(5, 5, 300, 125, BLACK);
         DrawFPS(15, 10);
-        DrawText("resolution:", 15, 40, 20, YELLOW); DrawText($"{ScreenWidth} x {ScreenHeight}", 130, 40, 20, WHITE);
-        DrawText("position:", 15, 60, 20, YELLOW); DrawText($"({vehicle.Position.X:N0}, {vehicle.Position.Y:N0})", 130, 60, 20, WHITE);
-        DrawText("tile:", 15, 80, 20, YELLOW); DrawText($"({vehicle.Position.X / Map.TileSize:N0}, {vehicle.Position.Y / Map.TileSize:N0})", 130, 80, 20, WHITE);
-        DrawText("depth:", 15, 100, 20, YELLOW); DrawText($"{gameModel.Depth:N0}", 130, 100, 20, WHITE);
+        DrawText("depth:", 15, 40, 20, YELLOW); DrawText($"{gameModel.Depth:N2}", 130, 40, 20, WHITE);
+        DrawText("resolution:", 15, 60, 20, YELLOW); DrawText($"{ScreenWidth} x {ScreenHeight}", 130, 60, 20, WHITE);
+        DrawText("position:", 15, 80, 20, YELLOW); DrawText($"({vehicle.Position.X:N0}, {vehicle.Position.Y:N0})", 130, 80, 20, WHITE);
+        DrawText("tile:", 15, 100, 20, YELLOW); DrawText($"({vehicle.Position.X / Map.TileSize:N0}, {vehicle.Position.Y / Map.TileSize:N0})", 130, 100, 20, WHITE);
     }
 }
