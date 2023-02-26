@@ -15,6 +15,7 @@ public static class Program
     {
         SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_VSYNC_HINT));
         InitWindow(ScreenWidth, ScreenHeight, Title);
+        RayGui.GuiLoadStyleDefault();
         var monitorCount = GetMonitorCount();
         if(monitorCount > 0 )
         {
