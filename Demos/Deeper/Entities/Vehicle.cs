@@ -39,50 +39,9 @@ internal class Vehicle : Sprite, IUpdateable
 
     public void Update(float elapsedSeconds)
     {
-        //if (direction == Direction.None)
-        //{
-        //    //  read user input if not moving
-        //    //var requestedDirection = GetDirectionInput();
-        //    //direction = HandleMoveRequest(requestedDirection);
-
-        //    //if (requestedDirection == Direction.None)
-        //    //{
-        //    //    //  simulate falling if no tile bellow 
-        //    //    var belowLocation = GetAdjacentLocation(gameModel.VehicleLocation, Direction.South);
-        //    //    var tile = gameModel.Map[belowLocation];
-        //    //    if (tile.TileType == TileType.Empty)
-        //    //    {
-        //    //        var tmp = Position;
-        //    //        tmp.Y++;
-        //    //        Position = tmp;
-        //    //        gameModel.TransitionPosition = tmp;
-        //    //        moveState = moveState with { Phase = MovePhase.FreeFall, EndLocation = null, EndsAt = null };
-        //    //    }
-        //    //}
-        //}
         var requestedDirection = GetDirectionInput();
         HandleMoveRequest(requestedDirection);
         HandleMoveState(elapsedSeconds);
-
-        //if (direction != Direction.None)
-        //{
-        //    //	update vehicle position
-        //    var distance = Vector2.Distance(Position, destinationPosition);
-        //    if (distance > 0)
-        //    {
-        //        ApplyMovement(elapsedSeconds, distance);
-        //    }
-        //    else
-        //    {
-        //        direction = Direction.None;
-        //        gameModel.TransitionPosition = Position;
-        //        gameModel.VehicleLocation.X = (int)(destinationPosition.X / Map.TileSize);
-        //        gameModel.VehicleLocation.Y = (int)(destinationPosition.Y / Map.TileSize);
-        //        Position = destinationPosition;
-        //        gameModel.Map.Dig(destinationTilePosition);
-        //        diggingBackground.Visible = false;
-        //    }
-        //}
 
         gameModel.VehicleLocation.X = (int)(Position.X / Map.TileSize);
         gameModel.VehicleLocation.Y = (int)(Position.Y / Map.TileSize);
@@ -96,23 +55,17 @@ internal class Vehicle : Sprite, IUpdateable
     private void HandleMoveRequest(Direction dir)
     {
         if (dir == Direction.None || dir == moveState.RequestedDirection)
-        {
-            //  start digging by converting dig request into movement
-            if (moveState.Phase == MovePhase.DigRequest && moveState.EndsAt < DateTime.Now)
-            {
-                moveState = moveState with { Phase = MovePhase.Moving, EndsAt = null };
-            }
             return;
-        }
 
         //-------------------------------------------------
         //  if here there a direction change is requested
         //-------------------------------------------------
 
-        //  check if un-cancelable action is in progress
+        //  exit if un-cancelable action is in progress
         if (moveState.Phase == MovePhase.Moving)
             return;
 
+        // exit if trying to move on non walkable tile
         destinationLocation = GetAdjacentLocation(gameModel.VehicleLocation, dir);
         if (!gameModel.Map.IsTileWalkable(destinationLocation))
         {
@@ -134,6 +87,7 @@ internal class Vehicle : Sprite, IUpdateable
                     EndLocation = destinationLocation,
                     EndsAt = null
                 };
+                Tint = WHITE;
                 break;
             case TileType.Dirt:
                 moveState = moveState with
@@ -142,24 +96,19 @@ internal class Vehicle : Sprite, IUpdateable
                     RequestedDirection = dir,
                     StartLocation = gameModel.VehicleLocation,
                     EndLocation = destinationLocation,
-                    EndsAt = DateTime.Now.AddMilliseconds(250)
+                    EndsAt = DateTime.Now.AddMilliseconds(750)
                 };
                 diggingBackground.Visible = true;
+                Tint = ORANGE;
                 break;
         }
 
-        if (dir == Direction.None)
-        {
-            return;
-        }
-        else
-        {
-            //moveState = moveState with { Phase = MovePhase.Idle, EndLocation = null, EndsAt = null };
-            Frame = frames[dir];
-            destinationPosition = new Vector2(destinationLocation.X, destinationLocation.Y) * Map.TileSize;
-            gameModel.TransitionPosition = Position;
-            return;
-        }
+        //moveState = moveState with { Phase = MovePhase.Idle, EndLocation = null, EndsAt = null };
+        Frame = frames[dir];
+        destinationPosition = new Vector2(destinationLocation.X, destinationLocation.Y) * Map.TileSize;
+        gameModel.TransitionPosition = Position;
+        return;
+
     }
 
     private void HandleMoveState(float elapsedSeconds)
@@ -190,7 +139,7 @@ internal class Vehicle : Sprite, IUpdateable
             case MovePhase.Moving:
                 //  update position
                 var distance = Vector2.Distance(Position, destinationPosition);
-                if (distance > 0)
+                if (distance > 0.2)
                 {
                     ApplyMovement(elapsedSeconds, distance);
                 }
@@ -208,9 +157,15 @@ internal class Vehicle : Sprite, IUpdateable
 
             case MovePhase.DigRequest:
                 //  vertically center with destination tile, check for state completion time and transition to moving
+                if (moveState.EndsAt < DateTime.Now)
+                {
+                    moveState = moveState with { Phase = MovePhase.Moving, EndsAt = null };
+                    Tint = WHITE;
+                }
                 break;
         }
     }
+
     private void ApplyMovement(float elapsedSeconds, float distance)
     {
         //	velocity depends on tile type, empty and above ground tiles have no penalty while digging depends on (TODO: drill, engine etc)
@@ -230,17 +185,14 @@ internal class Vehicle : Sprite, IUpdateable
         dx = nx * movement;
         dy = ny * movement;
 
-        //gameModel.TransitionPosition = new Vector2(Position.X + dx, Position.Y + dy);
-        //var tmp = transitionPosition;
         gameModel.TransitionPosition += moveState.RequestedDirection switch
         {
-            Direction.East => new(movement, 0f),
-            Direction.West => new(-movement, 0f),
-            Direction.North => new(0f, -movement),
-            Direction.South => new(0f, movement),
+            Direction.East => new(dx, dy),
+            Direction.West => new(dx, dy),
+            Direction.North => new(0f, dy),
+            Direction.South => new(0f, dy),
             _ => Vector2.Zero
         };
-        //transitionPosition = tmp;
 
         // vehicle position is rounded to avoid issues with tile border flickering
         var tmp = gameModel.TransitionPosition;
