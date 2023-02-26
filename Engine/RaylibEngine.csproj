@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Raylib-CsLo" Version="4.2.0.5" />
+		<PackageReference Include="Raylib-CsLo" Version="4.2.0.6" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EditorConfigFiles Remove="C:\repos\RaylibEngine\Engine\SceneManagement\.editorconfig" />

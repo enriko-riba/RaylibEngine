@@ -10,7 +10,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Engine\RaylibEngine.csproj" />
 		<PackageReference Include="Box2D.NetStandard" Version="2.4.7-alpha" />
-		<PackageReference Include="Raylib-CsLo" Version="4.2.0.5" />
+		<PackageReference Include="Raylib-CsLo" Version="4.2.0.6" />
 		<Using Include="Raylib_CsLo" />
 		<Using Include="Raylib_CsLo.Raylib" Static="True" />
 	</ItemGroup>
