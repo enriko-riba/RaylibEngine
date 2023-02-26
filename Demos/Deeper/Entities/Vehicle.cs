@@ -48,17 +48,16 @@ internal class Vehicle : Sprite, IUpdateable
     }
 
     /// <summary>
-    /// Prepares movement and returns the new direction.
+    /// Prepares movement request.
     /// </summary>
     /// <param name="dir"></param>
-    /// <returns></returns>
     private void HandleMoveRequest(Direction dir)
     {
         if (dir == Direction.None || dir == moveState.RequestedDirection)
             return;
 
         //-------------------------------------------------
-        //  if here there a direction change is requested
+        //  if here, a direction change is requested
         //-------------------------------------------------
 
         //  exit if un-cancelable action is in progress
@@ -74,7 +73,6 @@ internal class Vehicle : Sprite, IUpdateable
         }
 
         var tileType = gameModel.Map[destinationLocation].TileType;
-        diggingBackground.Visible = false;
         switch (tileType)
         {
             case TileType.Empty:
@@ -96,19 +94,16 @@ internal class Vehicle : Sprite, IUpdateable
                     RequestedDirection = dir,
                     StartLocation = gameModel.VehicleLocation,
                     EndLocation = destinationLocation,
-                    EndsAt = DateTime.Now.AddMilliseconds(750)
-                };
-                diggingBackground.Visible = true;
+                    EndsAt = DateTime.Now.AddMilliseconds(DigPreparationMilliseconds)
+                };                
                 Tint = ORANGE;
                 break;
         }
-
-        //moveState = moveState with { Phase = MovePhase.Idle, EndLocation = null, EndsAt = null };
+                
         Frame = frames[dir];
+        diggingBackground.Visible = false;
         destinationPosition = new Vector2(destinationLocation.X, destinationLocation.Y) * Map.TileSize;
         gameModel.TransitionPosition = Position;
-        return;
-
     }
 
     private void HandleMoveState(float elapsedSeconds)
@@ -161,6 +156,7 @@ internal class Vehicle : Sprite, IUpdateable
                 {
                     moveState = moveState with { Phase = MovePhase.Moving, EndsAt = null };
                     Tint = WHITE;
+                    diggingBackground.Visible = true;
                 }
                 break;
         }

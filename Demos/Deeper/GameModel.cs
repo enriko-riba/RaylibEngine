@@ -6,6 +6,7 @@ namespace Deeper;
 internal class GameModel
 {
     public const float Speed = Map.TileSize * 2.5f;
+    public const int DigPreparationMilliseconds = 750;
 
     public GameModel(Map map)
     {

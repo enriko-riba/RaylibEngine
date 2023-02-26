@@ -1,5 +1,4 @@
-﻿
-namespace RaylibEngine.Components;
+﻿namespace RaylibEngine.Components;
 
 using Raylib_CsLo;
 using RaylibEngine.Core;

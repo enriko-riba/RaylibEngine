@@ -1,8 +1,8 @@
-﻿
-using Deeper.Entities;
+﻿using Deeper.Entities;
 using RaylibEngine.SceneManagement;
 
 namespace Deeper;
+
 public static class Program
 {
     const string Title = "Deeper";
@@ -15,18 +15,21 @@ public static class Program
     {
         SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_VSYNC_HINT));
         InitWindow(ScreenWidth, ScreenHeight, Title);
-        RayGui.GuiLoadStyleDefault();
+
         var monitorCount = GetMonitorCount();
-        if(monitorCount > 0 )
+        if (monitorCount > 0)
         {
             SetWindowMonitor(1);
         }
+
         SetWindowMinSize(MinScreenWidth, MinScreenHeight);
-        
+        //var isFS = IsWindowFullscreen();
+        ToggleFullscreen();
+
+        RayGui.GuiLoadStyleDefault();
         var img = LoadImage("./Assets/Spike Head/Idle.png");
         SetWindowIcon(img);
 
-        //ToggleFullscreen();
         SetTargetFPS(144);
 
         DeeperScene mainScene = new(Title);

@@ -51,12 +51,12 @@ internal class Map
     /// <summary>
     /// Digs a tile at the given position.
     /// </summary>
-    /// <param name="position">tile position</param>
-    public void Dig(MapLocation position)
+    /// <param name="location">tile position</param>
+    public void Dig(MapLocation location)
     {
-        if (position.Y <= 0) return;
+        if (location.Y <= 0) return;
 
-        var index = position.X + position.Y * Width;
+        var index = location.X + location.Y * Width;
         var tile = tiles[index];
         if (tile.TileType != TileType.Blocker && tile.TileType != TileType.Empty && tile.Sprite is not null)
         {
@@ -100,13 +100,13 @@ internal class Map
         {
             for (var y = 0; y < Height; y++)
             {
-                MapLocation position = new(x, y);
+                MapLocation location = new(x, y);
                 Sprite sprite = new(atlas, new(x * TileSize, y * TileSize + TileSize / 2), TileSize, TileSize)
                 {
-                    Frame = GetBasicMapLayoutFrame(position),
+                    Frame = GetBasicMapLayoutFrame(location),
                     Anchor = new(0.5f, 0.5f),
                 };
-                tiles[x + y * Width] = new Tile(position, GetMapTileType(position), sprite);
+                tiles[x + y * Width] = new Tile(location, GetMapTileType(location), sprite);
             }
         }
     }
@@ -114,15 +114,15 @@ internal class Map
     /// <summary>
     /// Gets frames for outer borders, ground level, top row and dirt fill.
     /// </summary>
-    /// <param name="position">tile position</param>
+    /// <param name="location">tile position</param>
     /// <returns></returns>
-    private Rectangle GetBasicMapLayoutFrame(MapLocation position)
+    private Rectangle GetBasicMapLayoutFrame(MapLocation location)
     {
-        var frame = position.X == 0 || position.X == Width - 1 ? FrameBrick :
-                    position.Y == Height - 1 ? FrameBrick :
-                    position.Y > 1 ? FrameDirt :
-                    position.Y == 0 ? FrameTransparent :
-                    position.X % 3 == 0 ? FrameGroundLine :
+        var frame = location.X == 0 || location.X == Width - 1 ? FrameBrick :
+                    location.Y == Height - 1 ? FrameBrick :
+                    location.Y > 1 ? FrameDirt :
+                    location.Y == 0 ? FrameTransparent :
+                    location.X % 3 == 0 ? FrameGroundLine :
                     FrameGrass;
         return frame;
     }
@@ -130,13 +130,13 @@ internal class Map
     /// <summary>
     /// Gets the basic tile types based on tile position.
     /// </summary>
-    /// <param name="position">tile position</param>
+    /// <param name="location">tile position</param>
     /// <returns></returns>
-    private static TileType GetMapTileType(MapLocation position)
+    private static TileType GetMapTileType(MapLocation location)
     {
-        var tileType = position.X == 0 || position.X == Width - 1 ? TileType.Blocker :
-                       position.Y == Height - 1 ? TileType.Blocker :
-                       position.Y > 0 ? TileType.Dirt :
+        var tileType = location.X == 0 || location.X == Width - 1 ? TileType.Blocker :
+                       location.Y == Height - 1 ? TileType.Blocker :
+                       location.Y > 0 ? TileType.Dirt :
                        TileType.Ground;
         return tileType;
     }

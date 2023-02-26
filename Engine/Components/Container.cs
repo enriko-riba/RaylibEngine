@@ -1,6 +1,7 @@
-﻿using RaylibEngine.Core;
+﻿namespace RaylibEngine.Components;
 
-namespace RaylibEngine.Components;
+using RaylibEngine.Core;
+
 /// <summary>
 /// Basic container implementation. The container is a collection of child nodes..
 /// </summary>
