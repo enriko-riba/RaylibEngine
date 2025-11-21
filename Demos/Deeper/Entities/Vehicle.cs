@@ -7,7 +7,8 @@ using static Deeper.GameModel;
 
 internal class Vehicle : Sprite, IUpdateable
 {
-    private readonly Dictionary<Direction, Rectangle> frames = new();
+    private readonly Rectangle atlasFrame = new(462,208, 48, 48);
+    //private read-only Dictionary<Direction, Rectangle> frames = new();
     private readonly Sprite diggingBackground;
     private readonly GameModel gameModel;
 
@@ -19,19 +20,23 @@ internal class Vehicle : Sprite, IUpdateable
         : base(texture, new(gameModel.VehicleLocation.X * Map.TileSize, gameModel.VehicleLocation.Y * Map.TileSize), Map.TileSize, Map.TileSize)
     {
         this.gameModel = gameModel;
-        frames[Direction.West] = new(416, 160, Map.TileSize, Map.TileSize);
-        frames[Direction.East] = new(464, 160, Map.TileSize, Map.TileSize);
-        frames[Direction.North] = new(416, 208, Map.TileSize, Map.TileSize);
-        frames[Direction.South] = new(464, 208, Map.TileSize, Map.TileSize);
-        Frame = frames[Direction.East];
+        //frames[Direction.West] = new(416, 160, Map.TileSize, Map.TileSize);
+        //frames[Direction.East] = new(464, 160, Map.TileSize, Map.TileSize);
+        //frames[Direction.North] = new(416, 208, Map.TileSize, Map.TileSize);
+        //frames[Direction.South] = new(464, 208, Map.TileSize, Map.TileSize);
+        //Frame = frames[Direction.East];
+        Frame = atlasFrame;
+        Pivot = new(0.5f, 0.5f);
+        Anchor = new(0.5f, 0);
         Name = "Vehicle";
 
         diggingBackground = new Sprite(texture, Vector2.Zero, Map.TileSize, Map.TileSize)
         {
             Name = "DiggingBack",
             Frame = new(392, 96, Map.TileSize, Map.TileSize),
-            Anchor = new(0.5f, 1f),
+            Pivot = new(0f, 1),
             Visible = false,
+            Position = new(Map.TileSize/2, 0)
         };
         AddChild(diggingBackground);
         moveState = new MoveState(MovePhase.Idle, Direction.None, gameModel.VehicleLocation, null, null);
@@ -99,8 +104,16 @@ internal class Vehicle : Sprite, IUpdateable
                 Tint = ORANGE;
                 break;
         }
-                
-        Frame = frames[dir];
+
+        //Frame = frames[dir];
+        Angle = dir switch
+        {
+            Direction.East => 0,
+            Direction.North => 270,
+            Direction.West => 180,
+            Direction.South => 90,
+            _ => Angle
+        };
         diggingBackground.Visible = false;
         destinationPosition = new Vector2(destinationLocation.X, destinationLocation.Y) * Map.TileSize;
         gameModel.TransitionPosition = Position;

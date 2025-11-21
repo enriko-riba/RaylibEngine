@@ -207,7 +207,7 @@ internal class GameScene : Scene
     {
         if (IsKeyDown(KeyboardKey.KEY_SPACE))
         {
-            if (gameModel.State == GameState.Died)
+            if (gameModel.State == GameState.Died)cls
             {
                 requestedDirection = Direction.None;
                 gameModel.RestartLevel();

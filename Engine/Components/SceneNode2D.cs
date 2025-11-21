@@ -6,35 +6,53 @@ using System.Numerics;
 
 public abstract class SceneNode2D : SceneNode, IDrawable2D
 {
-    protected Vector2 worldPosition = Vector2.Zero;
-    protected float worldAngle;
-
-    protected Rectangle dst;
     protected Vector2 position = Vector2.Zero;
     protected Vector2 pivot = Vector2.Zero;
     protected Vector2 anchor = Vector2.Zero;
+    protected Vector2 scale = Vector2.One;
     protected int width;
     protected int height;
     protected Vector2 origin;
     protected float angle;
     protected Rectangle aabb;
     protected Rectangle frame;
+    
 
-    /// <summary>
-    /// Returns the texture destination rectangle.
-    /// </summary>
-    public Rectangle Dst => dst;
+    protected void UpdateWorldMatrix()
+    {
+        if (Parent is IDrawable2D pd && pd != null)
+        {
+            worldMatrix = pd.WorldMatrix * (this as IDrawable2D).WorldMatrix;
+        }
+        else
+        {
+            worldMatrix = (this as IDrawable2D).WorldMatrix;
+        }
+    }
+   
 
     /// <summary>
     /// Axis aligned bounding box.
     /// </summary>
     public Rectangle Aabb => aabb;
 
-
     /// <summary>
     /// The texture to be rendered.
     /// </summary>
     public Texture Texture { get; set; }
+
+    /// <summary>
+    /// Sprites scale.
+    /// </summary>
+    public Vector2 Scale
+    {
+        get => scale;
+        set
+        {
+            scale = value;
+            IsDirty = true;
+        }
+    }
 
     /// <summary>
     /// Sprite position in pixels.
@@ -47,7 +65,6 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
             if (position != value)
             {
                 position = value;
-                worldPosition = position;
                 IsDirty = true;
             }
         }
@@ -64,7 +81,6 @@ public abstract class SceneNode2D : SceneNode, IDrawable2D
             if (angle != value)
             {
                 angle = value;
-                worldAngle = angle;
                 IsDirty = true;
             }
         }

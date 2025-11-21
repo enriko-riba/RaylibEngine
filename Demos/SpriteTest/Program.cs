@@ -10,7 +10,11 @@ public static class Program
     {
         SetConfigFlags((uint)(ConfigFlags.FLAG_WINDOW_RESIZABLE | ConfigFlags.FLAG_MSAA_4X_HINT));
         InitWindow(0, 0, Title);
-
+        var monitorCount = GetMonitorCount();
+        if (monitorCount > 0)
+        {
+            SetWindowMonitor(1);
+        }
         SetTargetFPS(144);
         SpriteScene bunnyScene = new(Title);
         SceneManager.ActivateScene(bunnyScene);

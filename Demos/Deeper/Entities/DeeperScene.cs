@@ -50,8 +50,8 @@ internal class DeeperScene : Scene
         //	players vehicle		
         vehicle = new Vehicle(atlas, gameModel)
         {
-            Pivot = new(0.5f, 1f),
-            Anchor = new(0.5f, 0f),
+            //Pivot = new(0.5f, 1f),
+            //Anchor = new(0.5f, 0f),
         };
         AddChild(vehicle);
 
